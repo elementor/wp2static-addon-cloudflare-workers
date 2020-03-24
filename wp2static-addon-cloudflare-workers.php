@@ -17,9 +17,9 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 define( 'WP2STATIC_CLOUDFLARE_WORKERS_PATH', plugin_dir_path( __FILE__ ) );
-define( 'WP2STATIC_CLOUDFLARE_WORKERS_VERSION', '1.0-alpha-002' );
+define( 'WP2STATIC_CLOUDFLARE_WORKERS_VERSION', '1.0-alpha-001' );
 
-require WP2STATIC_S3_PATH . 'vendor/autoload.php';
+require WP2STATIC_CLOUDFLARE_WORKERS_PATH . 'vendor/autoload.php';
 
 function run_wp2static_addon_cloudflare_workers() {
     $controller = new WP2StaticCloudFlareWorkers\Controller();
