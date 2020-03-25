@@ -29,6 +29,7 @@ class Deployer {
 
         $headers = [
             'Authorization' => 'Bearer ' . $api_token,
+            'Content-Type' => 'application/json',
         ];
 
 
@@ -39,6 +40,14 @@ class Deployer {
                 RecursiveDirectoryIterator::SKIP_DOTS
             )
         );
+
+
+        // per batch write is < 100MB or < 10,000 files
+        $batch_file_count = 0;
+        $batch_file_size = 0;
+        $batch_number = 0;
+        $batches = [];
+
 
         foreach ( $iterator as $filename => $file_object ) {
             $base_name = basename( $filename );
@@ -62,37 +71,88 @@ class Deployer {
                     continue;
                 }
 
-                $key = urlencode( str_replace( $processed_site_path, '', $filename ) );
-
-                error_log($key);
-
+                // $key = urlencode( str_replace( $processed_site_path, '', $filename ) );
+                $key = str_replace( $processed_site_path, '', $filename );
                 $mime_type = MimeTypes::GuessMimeType( $filename );
 
-                // TODO: try / catch before recording as success/adding to DeployCache
+                $put_object = new \stdClass();
+                $put_object->kv_key = $key;
+                $put_object->content_type = $mime_type;
+                $put_object->filename = $filename;
 
-                // put file contents to path key
+                $batches[ $batch_number ][] = $put_object;
+
+            }
+
+            foreach ( $batches as $batch ) {
+
+                $bulk_key_values = [];
+
+                foreach ( $batch as $put_object ) {
+                    // error_log( print_r( $put_object, true ) );
+
+                    // put file contents to path key
+                    $bulk_key_values[] = [
+                        'key' => $put_object->kv_key,
+                        'value' => base64_encode( file_get_contents( $put_object->filename ) ),
+                        'base64' => true,
+                    ];
+
+                    // put content type to path_ct key
+                    $bulk_key_values[] = [
+                        'key' => $put_object->kv_key . "_ct",
+                        'value' => $put_object->content_type,
+                    ];
+
+                    // // TODO: try / catch before recording as success/adding to DeployCache
+                    // // put file contents to path key
+                    // $res = $client->request(
+                    //     'PUT',
+                    //     "accounts/$account_id/storage/kv/namespaces/$namespace_id/values/$key",
+                    //     [
+                    //         'headers' => $headers,
+                    //         'body' => 'some stuff (updated)',
+                    //     ],
+                    // );
+
+                    // // put content type to path_ct key
+                    // $res = $client->request(
+                    //     'PUT',
+                    //     "accounts/$account_id/storage/kv/namespaces/$namespace_id/values/${key}_ct",
+                    //     [
+                    //         'headers' => $headers,
+                    //         'body' => $mime_type,
+                    //     ],
+                    // );
+
+                    // if ( $result['@metadata']['statusCode'] === 200 ) {
+                    //     \WP2Static\DeployCache::addFile( $filename );
+                    // }
+                }
+
+                // $bulk_key_values = [
+                //     [
+                //         'key' => '000test',
+                //         'value' => 'some content',
+                //     ],
+                //     [
+                //         'key' => '000test_ct',
+                //         'value' => 'some content type',
+                //     ],
+                // ];
+
+                // error_log( print_r( $bulk_key_values, true ) );
+
+                // error_log( json_encode( $bulk_key_values ) );
+
                 $res = $client->request(
                     'PUT',
-                    "accounts/$account_id/storage/kv/namespaces/$namespace_id/values/$key",
+                    "accounts/$account_id/storage/kv/namespaces/$namespace_id/bulk",
                     [
                         'headers' => $headers,
-                        'body' => 'some stuff (updated)',
+                        'json' => $bulk_key_values,
                     ],
                 );
-
-                // put content type to path_ct key
-                $res = $client->request(
-                    'PUT',
-                    "accounts/$account_id/storage/kv/namespaces/$namespace_id/values/${key}_ct",
-                    [
-                        'headers' => $headers,
-                        'body' => $mime_type,
-                    ],
-                );
-
-                // if ( $result['@metadata']['statusCode'] === 200 ) {
-                //     \WP2Static\DeployCache::addFile( $filename );
-                // }
             }
         }
     }
