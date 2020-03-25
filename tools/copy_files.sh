@@ -21,9 +21,9 @@ PLUGIN_DIR=/var/www/htdocs/wp-content/plugins/
 # cp all required sources to build dir
 cp -r $EXEC_DIR/wp2static-addon-cloudflare-workers.php $PLUGIN_DIR/wp2static-addon-cloudflare-workers/
 cp -r $EXEC_DIR/src $PLUGIN_DIR/wp2static-addon-cloudflare-workers/
-cp -r $EXEC_DIR/composer.json $PLUGIN_DIR/wp2static-addon-cloudflare-workers/
 cp -r $EXEC_DIR/README.txt $PLUGIN_DIR/wp2static-addon-cloudflare-workers/
 cp -r $EXEC_DIR/views $PLUGIN_DIR/wp2static-addon-cloudflare-workers/
+cp -r $EXEC_DIR/vendor $PLUGIN_DIR/wp2static-addon-cloudflare-workers/
 
 cd $PLUGIN_DIR/wp2static-addon-cloudflare-workers
 
