@@ -6,7 +6,7 @@ class Controller {
     public function run() : void {
         global $wpdb;
 
-        $table_name = $wpdb->prefix . 'wp2static_addon_cloudflare_norkers_options';
+        $table_name = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
 
         $charset_collate = $wpdb->get_charset_collate();
 
@@ -24,11 +24,14 @@ class Controller {
 
         $options = $this->getOptions();
 
-        if ( ! isset( $options['s3Bucket'] ) ) {
+        if ( ! isset( $options['namespaceID'] ) ) {
             $this->seedOptions();
         }
 
-        add_filter( 'wp2static_add_menu_items', [ 'WP2StaticCloudflareWorkers\Controller', 'addSubmenuPage' ] );
+        add_filter(
+            'wp2static_add_menu_items',
+            [ 'WP2StaticCloudflareWorkers\Controller', 'addSubmenuPage' ]
+        );
 
         add_action(
             'admin_post_wp2static_cloudflare_workers_save_options',
@@ -40,13 +43,6 @@ class Controller {
         add_action(
             'wp2static_deploy',
             [ $this, 'deploy' ],
-            15,
-            1
-        );
-
-        add_action(
-            'wp2static_post_deploy_trigger',
-            [ 'WP2StaticCloudflareWorkers\Deployer', 'cloudfront_invalidate_all_items' ],
             15,
             1
         );
@@ -92,110 +88,20 @@ class Controller {
 
         $query = $wpdb->prepare(
             $query_string,
-            'cfDistributionID',
+            'apiToken',
             '',
-            'CloudFront Distribution ID',
-            'If using CloudFront, set this to auto-invalidate cache'
+            'API Token',
+            'see https://dash.cloudflare.com/profile/api-tokens'
         );
 
         $wpdb->query( $query );
 
         $query = $wpdb->prepare(
             $query_string,
-            's3Bucket',
+            'namespaceID',
             '',
-            'Bucket name',
-            ''
-        );
-
-        $wpdb->query( $query );
-
-        $query = $wpdb->prepare(
-            $query_string,
-            's3AccessKeyID',
-            '',
-            'Access Key ID',
-            ''
-        );
-
-        $wpdb->query( $query );
-
-        $query = $wpdb->prepare(
-            $query_string,
-            's3SecretAccessKey',
-            '',
-            'Secret Access Key',
-            ''
-        );
-
-        $wpdb->query( $query );
-
-        $query = $wpdb->prepare(
-            $query_string,
-            'cfAccessKeyID',
-            '',
-            'Access Key ID',
-            ''
-        );
-
-        $wpdb->query( $query );
-
-        $query = $wpdb->prepare(
-            $query_string,
-            'cfSecretAccessKey',
-            '',
-            'Secret Access Key',
-            ''
-        );
-
-        $wpdb->query( $query );
-
-        $query = $wpdb->prepare(
-            $query_string,
-            's3Region',
-            '',
-            'Region',
-            ''
-        );
-
-        $wpdb->query( $query );
-
-        $query = $wpdb->prepare(
-            $query_string,
-            's3Profile',
-            '',
-            'Profile',
-            ''
-        );
-
-        $wpdb->query( $query );
-
-        $query = $wpdb->prepare(
-            $query_string,
-            'cfRegion',
-            '',
-            'Region',
-            ''
-        );
-
-        $wpdb->query( $query );
-
-        $query = $wpdb->prepare(
-            $query_string,
-            'cfProfile',
-            '',
-            'Profile',
-            ''
-        );
-
-        $wpdb->query( $query );
-
-        $query = $wpdb->prepare(
-            $query_string,
-            's3RemotePath',
-            '',
-            'Path prefix in bucket',
-            'Optionally, deploy to a subdirectory within bucket'
+            'Namespace ID',
+            'ie 3d61660f7f564f689b24fbb1f252c033'
         );
 
         $wpdb->query( $query );
@@ -217,27 +123,28 @@ class Controller {
         $wpdb->query( $query );
     }
 
-    public static function renderS3Page() : void {
+    public static function renderCloudflareWorkersPage() : void {
         $view = [];
-        $view['nonce_action'] = 'wp2static-s3-options';
+        $view['nonce_action'] = 'wp2static-cloudflare-workers-options';
         $view['uploads_path'] = \WP2Static\SiteInfo::getPath( 'uploads' );
-        $s3_path = \WP2Static\SiteInfo::getPath( 'uploads' ) . 'wp2static-processed-site.s3';
+        $cloudflare_workers_path =
+            \WP2Static\SiteInfo::getPath( 'uploads' ) . 'wp2static-processed-site.s3';
 
         $view['options'] = self::getOptions();
 
-        $view['s3_url'] =
-            is_file( $s3_path ) ?
+        $view['cloudflare_workers_url'] =
+            is_file( $cloudflare_workers_path ) ?
                 \WP2Static\SiteInfo::getUrl( 'uploads' ) . 'wp2static-processed-site.s3' : '#';
 
-        require_once __DIR__ . '/../views/s3-page.php';
+        require_once __DIR__ . '/../views/cloudflare-workers-page.php';
     }
 
 
     public function deploy( string $processed_site_path ) : void {
         \WP2Static\WsLog::l( 'S3 Addon deploying' );
 
-        $s3_deployer = new Deployer();
-        $s3_deployer->upload_files( $processed_site_path );
+        $cloudflare_workers_deployer = new Deployer();
+        $cloudflare_workers_deployer->upload_files( $processed_site_path );
     }
 
     /*
@@ -339,99 +246,39 @@ class Controller {
      * @return mixed[] array of submenu pages
      */
     public static function addSubmenuPage( array $submenu_pages ) : array {
-        $submenu_pages['s3'] = [ 'WP2StaticCloudflareWorkers\Controller', 'renderS3Page' ];
+        $submenu_pages['cloudflare-workers'] =
+            [ 'WP2StaticCloudflareWorkers\Controller', 'renderCloudflareWorkersPage' ];
 
         return $submenu_pages;
     }
 
     public static function saveOptionsFromUI() : void {
-        check_admin_referer( 'wp2static-s3-options' );
+        check_admin_referer( 'wp2static-cloudflare-workers-options' );
 
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
 
-        $wpdb->update(
-            $table_name,
-            [ 'value' => sanitize_text_field( $_POST['cfDistributionID'] ) ],
-            [ 'name' => 'cfDistributionID' ]
-        );
-
-        $wpdb->update(
-            $table_name,
-            [ 'value' => sanitize_text_field( $_POST['s3Bucket'] ) ],
-            [ 'name' => 's3Bucket' ]
-        );
-
-        $wpdb->update(
-            $table_name,
-            [ 'value' => sanitize_text_field( $_POST['s3AccessKeyID'] ) ],
-            [ 'name' => 's3AccessKeyID' ]
-        );
-
-        $secret_access_key =
-            $_POST['s3SecretAccessKey'] ?
+        $api_token =
+            $_POST['apiToken'] ?
             self::encrypt_decrypt(
                 'encrypt',
-                sanitize_text_field( $_POST['s3SecretAccessKey'] )
+                sanitize_text_field( $_POST['apiToken'] )
             ) : '';
 
         $wpdb->update(
             $table_name,
-            [ 'value' => $secret_access_key ],
-            [ 'name' => 's3SecretAccessKey' ]
+            [ 'value' => $api_token ],
+            [ 'name' => 'apiToken' ]
         );
 
         $wpdb->update(
             $table_name,
-            [ 'value' => sanitize_text_field( $_POST['cfAccessKeyID'] ) ],
-            [ 'name' => 'cfAccessKeyID' ]
+            [ 'value' => sanitize_text_field( $_POST['namespaceID'] ) ],
+            [ 'name' => 'namespaceID' ]
         );
 
-        $secret_access_key =
-            $_POST['cfSecretAccessKey'] ?
-            self::encrypt_decrypt(
-                'encrypt',
-                sanitize_text_field( $_POST['cfSecretAccessKey'] )
-            ) : '';
-
-        $wpdb->update(
-            $table_name,
-            [ 'value' => $secret_access_key ],
-            [ 'name' => 'cfSecretAccessKey' ]
-        );
-
-        $wpdb->update(
-            $table_name,
-            [ 'value' => sanitize_text_field( $_POST['s3Region'] ) ],
-            [ 'name' => 's3Region' ]
-        );
-
-        $wpdb->update(
-            $table_name,
-            [ 'value' => sanitize_text_field( $_POST['cfRegion'] ) ],
-            [ 'name' => 'cfRegion' ]
-        );
-
-        $wpdb->update(
-            $table_name,
-            [ 'value' => sanitize_text_field( $_POST['s3Profile'] ) ],
-            [ 'name' => 's3Profile' ]
-        );
-
-        $wpdb->update(
-            $table_name,
-            [ 'value' => sanitize_text_field( $_POST['cfProfile'] ) ],
-            [ 'name' => 'cfProfile' ]
-        );
-
-        $wpdb->update(
-            $table_name,
-            [ 'value' => sanitize_text_field( $_POST['s3RemotePath'] ) ],
-            [ 'name' => 's3RemotePath' ]
-        );
-
-        wp_safe_redirect( admin_url( 'admin.php?page=wp2static-s3' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=wp2static-cloudflare-workers' ) );
         exit;
     }
 
