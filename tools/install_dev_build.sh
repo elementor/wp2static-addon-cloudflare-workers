@@ -53,6 +53,6 @@ zip -r -9 $TMP_DIR/wp2static-addon-cloudflare-workers.zip .
 
 cd /var/www/htdocs
 
-doas rm -Rf /var/www/htdocs/wp-content/plugins/wp2static-addon-cloudflare-workers
+rm -Rf /var/www/htdocs/wp-content/plugins/wp2static-addon-cloudflare-workers
 
 wp plugin install --activate $TMP_DIR/wp2static-addon-cloudflare-workers.zip
