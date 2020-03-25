@@ -1,6 +1,6 @@
 {
-    "name": "wp2static/wp2static-addon-s3",
-    "description": "S3 deployment Add-on for WP2Static.",
+    "name": "wp2static/wp2static-addon-cloudflare-workers",
+    "description": "Cloudflare Workers deployment Add-on for WP2Static.",
     "homepage": "https://wp2static.com",
       "license": "UNLICENSE",
       "authors": [
@@ -12,17 +12,11 @@
       ],
     "type": "wordpress-plugin",
     "support": {
-        "issues": "https://github.com/WP2Static/wp2static-addon-s3/issues",
+        "issues": "https://github.com/WP2Static/wp2static-addon-cloudflare-workers/issues",
         "forum": "https://wp2static.com/community",
         "docs": "https://wp2static.com/documentation",
-        "source": "https://github.com/WP2Static/wp2static-addon-s3"
+        "source": "https://github.com/WP2Static/wp2static-addon-cloudflare-workers"
     },
-    "repositories": [
-        {
-            "type": "pear",
-            "url": "https://pear.php.net"
-        }
-    ],
     "require": {
         "php": ">=7.2",
         "guzzlehttp/guzzle": "^6.5"
@@ -40,13 +34,13 @@
     },
     "autoload": {
         "psr-4": {
-            "WP2StaticS3\\": "src/"
+            "WP2StaticCloudflareWorkers\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
             "PHPStan\\WordPress\\": "tests/phpstan/",
-            "WP2StaticS3\\": "src/"
+            "WP2StaticCloudflareWorkers\\": "src/"
         }
     },
     "config": {
