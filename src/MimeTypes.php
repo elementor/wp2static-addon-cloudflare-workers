@@ -1,6 +1,6 @@
 <?php
 
-namespace WP2StaticS3;
+namespace WP2StaticCloudflareWorkers;
 
 class MimeTypes {
     /*

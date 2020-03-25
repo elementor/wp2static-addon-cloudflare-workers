@@ -6,56 +6,31 @@ use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use GuzzleHttp\Client;
 
-// TODO: pull out of old core GuessMimeType( $local_file )
-
 class Deployer {
 
-    // prepare deploy, if modifies URL structure, should be an action
-    // $this->prepareDeploy();
-
-    // options - load from addon's static methods
-
-    public function __construct() {}
-
     public function upload_files( string $processed_site_path ) : void {
-        // check if dir exists
         if ( ! is_dir( $processed_site_path ) ) {
             return;
         }
 
-        $client_options = [
-            'profile' => Controller::getValue( 's3Profile' ),
-            'version' => 'latest',
-            'region' => Controller::getValue( 's3Region' ),
-        ];
+        $account_id = Controller::getValue( 'accountID' );
+        $namespace_id = Controller::getValue( 'namespaceID' );
+        $api_token = \WP2StaticCloudflareWorkers\Controller::encrypt_decrypt(
+            'decrypt',
+            Controller::getValue( 'apiToken' )
+        );
 
-        /*
-            If no credentials option, SDK attempts to load credentials from
-            your environment in the following order:
-
-                 - environment variables.
-                 - a credentials .ini file.
-                 - an IAM role.
-        */
-        if (
-            Controller::getValue( 's3AccessKeyID' ) &&
-            Controller::getValue( 's3SecretAccessKey' )
-        ) {
-            error_log( 'using supplied creds' );
-            $client_options['credentials'] = [
-                'key' => Controller::getValue( 's3AccessKeyID' ),
-                'secret' => \WP2StaticCloudflareWorkers\Controller::encrypt_decrypt(
-                    'decrypt',
-                    Controller::getValue( 's3SecretAccessKey' )
-                ),
-            ];
-            unset( $client_options['profile'] );
+        if ( ! $account_id || ! $namespace_id || ! $api_token ) {
+            $err = 'Unable to deploy without API Token & Namespace ID set';
+            \WP2Static\WsLog::l( $err );
         }
 
-        error_log( print_r( $client_options, true ) );
+        $client = new Client( [ 'base_uri' => 'https://api.cloudflare.com/client/v4/' ] );
 
-        // instantiate S3 client
-        $s3 = new \Aws\S3\S3Client( $client_options );
+        $headers = [
+            'Authorization' => 'Bearer ' . $api_token,
+        ];
+
 
         // iterate each file in ProcessedSite
         $iterator = new RecursiveIteratorIterator(
@@ -70,15 +45,12 @@ class Deployer {
             if ( $base_name != '.' && $base_name != '..' ) {
                 $real_filepath = realpath( $filename );
 
-                // TODO: do filepaths differ when running from WP-CLI (non-chroot)?
-
-                // TODO: check if in DeployCache
                 if ( \WP2Static\DeployCache::fileisCached( $filename ) ) {
                     continue;
                 }
 
                 if ( ! $real_filepath ) {
-                    $err = 'Trying to add unknown file to Zip: ' . $filename;
+                    $err = 'Trying to deploy unknown file: ' . $filename;
                     \WP2Static\WsLog::l( $err );
                     continue;
                 }
@@ -90,33 +62,37 @@ class Deployer {
                     continue;
                 }
 
-                $key =
-                    Controller::getValue( 's3RemotePath' ) ?
-                    Controller::getValue( 's3RemotePath' ) . '/' .
-                    ltrim( str_replace( $processed_site_path, '', $filename ), '/' ) :
-                    ltrim( str_replace( $processed_site_path, '', $filename ), '/' );
+                $key = urlencode( str_replace( $processed_site_path, '', $filename ) );
 
-                $finfo = finfo_open( FILEINFO_MIME_TYPE );
+                error_log($key);
 
-                if ( ! $finfo ) {
-                    continue;
-                }
+                $mime_type = MimeTypes::GuessMimeType( $filename );
 
-                $mime_type = finfo_file( $finfo, $filename );
+                // TODO: try / catch before recording as success/adding to DeployCache
 
-                $result = $s3->putObject(
+                // put file contents to path key
+                $res = $client->request(
+                    'PUT',
+                    "accounts/$account_id/storage/kv/namespaces/$namespace_id/values/$key",
                     [
-                        'Bucket' => Controller::getValue( 's3Bucket' ),
-                        'Key' => $key,
-                        'Body' => file_get_contents( $filename ),
-                        'ACL'    => 'public-read',
-                        'ContentType' => $mime_type,
-                    ]
+                        'headers' => $headers,
+                        'body' => 'some stuff (updated)',
+                    ],
                 );
 
-                if ( $result['@metadata']['statusCode'] === 200 ) {
-                    \WP2Static\DeployCache::addFile( $filename );
-                }
+                // put content type to path_ct key
+                $res = $client->request(
+                    'PUT',
+                    "accounts/$account_id/storage/kv/namespaces/$namespace_id/values/${key}_ct",
+                    [
+                        'headers' => $headers,
+                        'body' => $mime_type,
+                    ],
+                );
+
+                // if ( $result['@metadata']['statusCode'] === 200 ) {
+                //     \WP2Static\DeployCache::addFile( $filename );
+                // }
             }
         }
     }

@@ -14,6 +14,22 @@
         <tr>
             <td style="width:50%;">
                 <label
+                    for="<?php echo $view['options']['accountID']->name; ?>"
+                ><?php echo $view['options']['accountID']->label; ?></label>
+            </td>
+            <td>
+                <input
+                    id="<?php echo $view['options']['accountID']->name; ?>"
+                    name="<?php echo $view['options']['accountID']->name; ?>"
+                    type="text"
+                    value="<?php echo $view['options']['accountID']->value !== '' ? $view['options']['accountID']->value : ''; ?>"
+                />
+            </td>
+        </tr>
+
+        <tr>
+            <td style="width:50%;">
+                <label
                     for="<?php echo $view['options']['namespaceID']->name; ?>"
                 ><?php echo $view['options']['namespaceID']->label; ?></label>
             </td>

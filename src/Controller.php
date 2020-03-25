@@ -105,6 +105,16 @@ class Controller {
         );
 
         $wpdb->query( $query );
+
+        $query = $wpdb->prepare(
+            $query_string,
+            'accountID',
+            '',
+            'Account ID',
+            'ie 13e736c51a7a73dabc0b83f75d3bedce'
+        );
+
+        $wpdb->query( $query );
     }
 
     /**
@@ -276,6 +286,12 @@ class Controller {
             $table_name,
             [ 'value' => sanitize_text_field( $_POST['namespaceID'] ) ],
             [ 'name' => 'namespaceID' ]
+        );
+
+        $wpdb->update(
+            $table_name,
+            [ 'value' => sanitize_text_field( $_POST['accountID'] ) ],
+            [ 'name' => 'accountID' ]
         );
 
         wp_safe_redirect( admin_url( 'admin.php?page=wp2static-cloudflare-workers' ) );
