@@ -1,21 +1,21 @@
 <?php
 
-namespace WP2StaticCloudFlareWorkers;
+namespace WP2StaticCloudflareWorkers;
 
 use WP_CLI;
 
 
 /**
- * WP2StaticCloudFlareWorkers WP-CLI commands
+ * WP2StaticCloudflareWorkers WP-CLI commands
  *
- * Registers WP-CLI commands for WP2StaticCloudFlareWorkers under main wp2static cmd
+ * Registers WP-CLI commands for WP2StaticCloudflareWorkers under main wp2static cmd
  *
  * Usage: wp wp2static options set s3Bucket mybucketname
  */
 class CLI {
 
     /**
-     * S3 commands
+     * Cloudflare Workers add-on commands
      *
      * @param string[] $args CLI args
      * @param string[] $assoc_args CLI args

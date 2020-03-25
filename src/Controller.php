@@ -1,12 +1,12 @@
 <?php
 
-namespace WP2StaticCloudFlareWorkers;
+namespace WP2StaticCloudflareWorkers;
 
 class Controller {
     public function run() : void {
         global $wpdb;
 
-        $table_name = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
+        $table_name = $wpdb->prefix . 'wp2static_addon_cloudflare_norkers_options';
 
         $charset_collate = $wpdb->get_charset_collate();
 
@@ -28,7 +28,7 @@ class Controller {
             $this->seedOptions();
         }
 
-        add_filter( 'wp2static_add_menu_items', [ 'WP2StaticCloudFlareWorkers\Controller', 'addSubmenuPage' ] );
+        add_filter( 'wp2static_add_menu_items', [ 'WP2StaticCloudflareWorkers\Controller', 'addSubmenuPage' ] );
 
         add_action(
             'admin_post_wp2static_cloudflare_workers_save_options',
@@ -46,15 +46,15 @@ class Controller {
 
         add_action(
             'wp2static_post_deploy_trigger',
-            [ 'WP2StaticCloudFlareWorkers\Deployer', 'cloudfront_invalidate_all_items' ],
+            [ 'WP2StaticCloudflareWorkers\Deployer', 'cloudfront_invalidate_all_items' ],
             15,
             1
         );
 
         if ( defined( 'WP_CLI' ) ) {
             \WP_CLI::add_command(
-                'wp2static s3',
-                [ 'WP2StaticCloudFlareWorkers\CLI', 's3' ]
+                'wp2static cloudflare_workers',
+                [ 'WP2StaticCloudflareWorkers\CLI', 'cloudflare_workers' ]
             );
         }
     }
@@ -339,7 +339,7 @@ class Controller {
      * @return mixed[] array of submenu pages
      */
     public static function addSubmenuPage( array $submenu_pages ) : array {
-        $submenu_pages['s3'] = [ 'WP2StaticCloudFlareWorkers\Controller', 'renderS3Page' ];
+        $submenu_pages['s3'] = [ 'WP2StaticCloudflareWorkers\Controller', 'renderS3Page' ];
 
         return $submenu_pages;
     }

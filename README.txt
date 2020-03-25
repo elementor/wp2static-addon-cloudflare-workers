@@ -7,11 +7,11 @@ Stable tag: 1.0-alpha-001
 License: Unlicense
 License URI: http://unlicense.org
 
-Adds CloudFlare Workers as a deployment option for WP2Static.
+Adds Cloudflare Workers as a deployment option for WP2Static.
 
 == Description ==
 
-Take advantage of the CloudFlare Workers to host your WordPress
+Take advantage of the Cloudflare Workers to host your WordPress
  powered static website.
 
 == Installation ==

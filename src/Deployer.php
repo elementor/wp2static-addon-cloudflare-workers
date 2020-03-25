@@ -1,6 +1,6 @@
 <?php
 
-namespace WP2StaticCloudFlareWorkers;
+namespace WP2StaticCloudflareWorkers;
 
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
@@ -44,7 +44,7 @@ class Deployer {
             error_log( 'using supplied creds' );
             $client_options['credentials'] = [
                 'key' => Controller::getValue( 's3AccessKeyID' ),
-                'secret' => \WP2StaticCloudFlareWorkers\Controller::encrypt_decrypt(
+                'secret' => \WP2StaticCloudflareWorkers\Controller::encrypt_decrypt(
                     'decrypt',
                     Controller::getValue( 's3SecretAccessKey' )
                 ),
@@ -150,7 +150,7 @@ class Deployer {
 
             $credentials = new \Aws\Credentials\Credentials(
                 Controller::getValue( 's3AccessKeyID' ),
-                \WP2StaticCloudFlareWorkers\Controller::encrypt_decrypt(
+                \WP2StaticCloudflareWorkers\Controller::encrypt_decrypt(
                     'decrypt',
                     Controller::getValue( 's3SecretAccessKey' )
                 )
