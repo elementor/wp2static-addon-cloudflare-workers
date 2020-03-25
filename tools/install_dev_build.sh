@@ -55,4 +55,5 @@ cd /var/www/htdocs
 
 rm -Rf /var/www/htdocs/wp-content/plugins/wp2static-addon-cloudflare-workers
 
+wp plugin delete wp2static-addon-cloudflare-workers
 wp plugin install --activate $TMP_DIR/wp2static-addon-cloudflare-workers.zip
