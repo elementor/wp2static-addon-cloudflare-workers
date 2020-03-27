@@ -33,6 +33,10 @@ class Deployer {
             \WP2Static\WsLog::l( $err );
         }
 
+        $deploy_count = 0;
+        $error_count = 0;
+        $cache_hits = 0;
+
         $client = new Client( [ 'base_uri' => 'https://api.cloudflare.com/client/v4/' ] );
 
         $headers = [
@@ -55,6 +59,7 @@ class Deployer {
                 $real_filepath = realpath( $filename );
 
                 if ( \WP2Static\DeployCache::fileisCached( $filename ) ) {
+                    $cache_hits++;
                     continue;
                 }
 
@@ -101,9 +106,11 @@ class Deployer {
                     $result = json_decode( (string) $res->getBody() );
 
                     if ( $result->success ) {
+                        $deployed++;
                         \WP2Static\DeployCache::addFile( $filename );
                     }
                 } else {
+                    $error_count++;
                     $err = 'Failed to deploy file: ' . $filename;
                     \WP2Static\WsLog::l( $err );
 
@@ -113,6 +120,18 @@ class Deployer {
                 }
             }
         }
+
+        \WP2Static\WsLog::l(
+            "Deployment complete. $deploy_count deployed, $cache_hits skipped (cached), $error_count errors."
+        );
+
+        $args = [
+            'deploy_count' => $deploy_count,
+            'error_count' => $error_count,
+            'cache_hits' => $cache_hits,
+        ];
+
+        do_action( 'wp2static_cloudflare_workers_deployment_complete', $args );
     }
 
     // TODO: see if efficient implementation is possible

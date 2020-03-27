@@ -161,7 +161,7 @@ class Controller {
 
 
     public function deploy( string $processed_site_path ) : void {
-        \WP2Static\WsLog::l( 'S3 Addon deploying' );
+        \WP2Static\WsLog::l( 'Cloudflare Workers add-on deploying' );
 
         $cloudflare_workers_deployer = new Deployer();
         $cloudflare_workers_deployer->upload_files( $processed_site_path );
