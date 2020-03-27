@@ -98,6 +98,16 @@ class Controller {
 
         $query = $wpdb->prepare(
             $query_string,
+            'useBulkUpload',
+            '',
+            'Bulk uploads',
+            'Uploads files in batches'
+        );
+
+        $wpdb->query( $query );
+
+        $query = $wpdb->prepare(
+            $query_string,
             'namespaceID',
             '',
             'Namespace ID',
@@ -280,6 +290,12 @@ class Controller {
             $table_name,
             [ 'value' => $api_token ],
             [ 'name' => 'apiToken' ]
+        );
+
+        $wpdb->update(
+            $table_name,
+            [ 'value' => isset( $_POST['useBulkUpload'] ) ?  1 : 0 ],
+            [ 'name' => 'useBulkUpload' ]
         );
 
         $wpdb->update(

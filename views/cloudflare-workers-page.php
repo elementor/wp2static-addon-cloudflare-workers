@@ -61,6 +61,23 @@
             </td>
         </tr>
 
+        <tr>
+            <td style="width:50%;">
+                <label
+                    for="<?php echo $view['options']['useBulkUpload']->name; ?> (experimental)"
+                /><?php echo $view['options']['useBulkUpload']->label; ?></label>
+            </td>
+            <td>
+                <input
+                    type="checkbox"
+                    id="<?php echo $view['options']['useBulkUpload']->name; ?>"
+                    name="<?php echo $view['options']['useBulkUpload']->name; ?>"
+                    value="1"
+                    <?php echo (int) $view['options']['useBulkUpload']->value === 1 ? 'checked' : ''; ?>
+                />
+            </td>
+        </tr>
+
     </tbody>
 </table>
 

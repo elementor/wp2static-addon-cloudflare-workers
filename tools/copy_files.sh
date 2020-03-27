@@ -12,11 +12,9 @@
 
 # run script from project root
 EXEC_DIR=$(pwd)
-
-TMP_DIR=$HOME/plugintmp
-
 PLUGIN_DIR=/var/www/htdocs/wp-content/plugins/
 
+mkdir -p $PLUGIN_DIR/wp2static-addon-cloudflare-workers/
 
 # cp all required sources to build dir
 cp -r $EXEC_DIR/wp2static-addon-cloudflare-workers.php $PLUGIN_DIR/wp2static-addon-cloudflare-workers/
