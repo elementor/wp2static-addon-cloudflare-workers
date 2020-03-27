@@ -121,8 +121,6 @@ class Deployer {
             }
         }
 
-        error_log('deploy loop complete');
-
         \WP2Static\WsLog::l(
             "Deployment complete. $deploy_count deployed, $cache_hits skipped (cached), $error_count errors."
         );
