@@ -97,15 +97,20 @@ class Deployer {
                     ],
                 );
 
-                if ($res->getBody()) {
-                    error_log( $res->getBody() );
+                if ( $res->getBody() ) {
+                    $result = json_decode( (string) $res->getBody() );
+
+                    if ( $result->success ) {
+                        \WP2Static\DeployCache::addFile( $filename );
+                    }
+                } else {
+                    $err = 'Failed to deploy file: ' . $filename;
+                    \WP2Static\WsLog::l( $err );
+
+                    if ( $result->error ) {
+                        \WP2Static\WsLog::l( $result->error );
+                    }
                 }
-
-
-                // TODO: 
-                // if ( $result['@metadata']['statusCode'] === 200 ) {
-                //     \WP2Static\DeployCache::addFile( $filename );
-                // }
             }
         }
     }
