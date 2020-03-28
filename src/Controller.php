@@ -294,7 +294,7 @@ class Controller {
 
         $wpdb->update(
             $table_name,
-            [ 'value' => isset( $_POST['useBulkUpload'] ) ?  1 : 0 ],
+            [ 'value' => isset( $_POST['useBulkUpload'] ) ? 1 : 0 ],
             [ 'name' => 'useBulkUpload' ]
         );
 
