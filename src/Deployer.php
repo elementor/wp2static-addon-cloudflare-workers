@@ -76,6 +76,7 @@ class Deployer {
                     continue;
                 }
 
+                // NOTE: urlencode needed on singlular transfers but not bulk
                 $key = urlencode( str_replace( $processed_site_path, '', $filename ) );
 
                 $mime_type = MimeTypes::GuessMimeType( $filename );
@@ -207,8 +208,8 @@ class Deployer {
                 continue;
             }
 
-            // $key = urlencode( str_replace( $processed_site_path, '', $filename ) );
             $key = str_replace( $processed_site_path, '', $filename );
+            $key = str_replace( '/index.html', '/', $key );
             $mime_type = MimeTypes::GuessMimeType( $filename );
 
             $put_object = new \stdClass();
