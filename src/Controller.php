@@ -99,7 +99,7 @@ class Controller {
         $query = $wpdb->prepare(
             $query_string,
             'useBulkUpload',
-            '',
+            '1',
             'Bulk uploads',
             'Uploads files in batches'
         );
