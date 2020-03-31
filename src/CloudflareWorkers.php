@@ -61,13 +61,14 @@ class CloudflareWorkers {
 
         if ( $result ) {
             if ( $result->errors ) {
-                error_log( 'failed to retrieve whole list of KV keys' );
+                \WP2Static\WsLog::l( 'Failed to retrieve whole list of KV keys' );
                 \WP2Static\WsLog::l( join( PHP_EOL, $result->errors ) );
                 exit( 1 );
             }
 
             if ( $result->messages ) {
-                error_log( print_r( $result->messages, true ) );
+                \WP2Static\WsLog::l( 'Messages from CF API' );
+                \WP2Static\WsLog::l( join( PHP_EOL, $result->errors ) );
             }
 
             if ( $result->success === true ) {
@@ -90,9 +91,53 @@ class CloudflareWorkers {
      * @return string[] Array of strings
      */
     public function list_keys() : array {
+        \WP2Static\WsLog::l( 'Starting to retrieving list of KV keys' );
         $this->get_page_of_keys( '' );
 
+        \WP2Static\WsLog::l( 'Completed retrieving list of KV keys' );
         return $this->key_names;
+    }
+
+    public function delete_keys() : bool {
+        \WP2Static\WsLog::l( 'Starting to delete all KV keys in namespace' );
+        $this->get_page_of_keys( '' );
+
+        $total_keys = count( $this->key_names );
+        \WP2Static\WsLog::l( "Attempting to delte $total_keys keys" );
+
+        if ( ! $total_keys ) {
+            return false;
+        }
+
+        // Note: API allows bulk deletion up to 10,000 at a time
+        $batches = ceil( $total_keys / 10000 );
+
+        for ( $batch = 0; $batch < $batches; $batch++ ) {
+            \WP2Static\WsLog::l( "Deleting batch $batch of $batches" );
+
+            $keys_to_delete = array_slice( $this->key_names, 0, 10000 );
+
+            \WP2Static\WsLog::l( count( $keys_to_delete ) . ' keys in batch' );
+
+            $res = $this->client->request(
+                'DELETE',
+                "accounts/$this->account_id/storage/kv/namespaces/$this->namespace_id/bulk",
+                [
+                    'headers' => $this->headers,
+                    'json' => $keys_to_delete,
+                ],
+            );
+
+            $result = json_decode( (string) $res->getBody() );
+
+            if ( ! $result->success ) {
+                \WP2Static\WsLog::l( 'Failed during deleting all KV keys in namespace' );
+                return false;
+            }
+        }
+
+        \WP2Static\WsLog::l( 'Completed deleting all KV keys in namespace' );
+        return true;
     }
 }
 

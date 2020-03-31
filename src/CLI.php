@@ -52,11 +52,47 @@ class CLI {
 
                 WP_CLI::line( (string) count( $key_names ) );
             }
+
+            if ( $arg === 'delete' ) {
+                if ( ! isset( $assoc_args['force'] ) ) {
+                    $this->multilinePrint(
+                        "no --force given. Please type 'yes' to confirm
+                        deletion of all keys in namespace"
+                    );
+
+                    $userval = trim( (string) fgets( STDIN ) );
+
+                    if ( $userval !== 'yes' ) {
+                        WP_CLI::error( 'Failed to delete namespace keys' );
+                    }
+                }
+
+                $client = new CloudflareWorkers();
+
+                $success = $client->delete_keys();
+
+                if ( ! $success ) {
+                    WP_CLI::error( 'Failed to delete keys (maybe there weren\'t any?' );
+                }
+
+                WP_CLI::success( 'Deleted all keys in namespace' );
+            }
         }
 
         if ( $action === 'get_value' ) {
             WP_CLI::line( 'TBC get value for a key' );
         }
+    }
+
+    /**
+     * Print multilines of input text via WP-CLI
+     */
+    public function multilinePrint( string $string ) : void {
+        $msg = trim( str_replace( [ "\r", "\n" ], '', $string ) );
+
+        $msg = preg_replace( '!\s+!', ' ', $msg );
+
+        WP_CLI::line( PHP_EOL . $msg . PHP_EOL );
     }
 }
 
