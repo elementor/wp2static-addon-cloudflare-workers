@@ -4,7 +4,6 @@ namespace WP2StaticCloudflareWorkers;
 
 use WP_CLI;
 
-
 /**
  * WP2StaticCloudflareWorkers WP-CLI commands
  *
@@ -25,6 +24,7 @@ class CLI {
         array $assoc_args
     ) : void {
         $action = isset( $args[0] ) ? $args[0] : null;
+        $arg = isset( $args[1] ) ? $args[1] : null;
 
         if ( empty( $action ) ) {
             WP_CLI::error( 'Missing required argument: <options>' );
@@ -32,6 +32,30 @@ class CLI {
 
         if ( $action === 'options' ) {
             WP_CLI::line( 'TBC setting options for CF Workers addon' );
+        }
+
+        if ( $action === 'keys' ) {
+            if ( $arg === 'list' ) {
+                $client = new CloudflareWorkers();
+
+                $key_names = $client->list_keys();
+
+                foreach ( $key_names as $name ) {
+                    WP_CLI::line( $name );
+                }
+            }
+
+            if ( $arg === 'count' ) {
+                $client = new CloudflareWorkers();
+
+                $key_names = $client->list_keys();
+
+                WP_CLI::line( (string) count( $key_names ) );
+            }
+        }
+
+        if ( $action === 'get_value' ) {
+            WP_CLI::line( 'TBC get value for a key' );
         }
     }
 }

@@ -30,7 +30,8 @@ class Deployer {
         );
 
         if ( ! $account_id || ! $namespace_id || ! $api_token ) {
-            $err = 'Unable to deploy without API Token & Namespace ID set';
+            $err = 'Unable to connect to Cloudflare API without ' .
+            'API Token, Account ID & Namespace ID set';
             \WP2Static\WsLog::l( $err );
         }
 
@@ -150,7 +151,8 @@ class Deployer {
         );
 
         if ( ! $account_id || ! $namespace_id || ! $api_token ) {
-            $err = 'Unable to deploy without API Token & Namespace ID set';
+            $err = 'Unable to connect to Cloudflare API without ' .
+            'API Token, Account ID & Namespace ID set';
             \WP2Static\WsLog::l( $err );
         }
 
@@ -225,7 +227,7 @@ class Deployer {
         $total_batches = count( $batches );
 
         foreach ( $batches as $index => $batch ) {
-            \WP2Static\WsLog::l( 'Uploading batch ' . ( $index + 1 ) . " of $total_batches");
+            \WP2Static\WsLog::l( 'Uploading batch ' . ( $index + 1 ) . " of $total_batches" );
 
             $bulk_key_values = [];
 
@@ -260,15 +262,15 @@ class Deployer {
         }
 
         \WP2Static\WsLog::l(
-            "Deployment complete"
+            'Deployment complete'
             // "Deployment complete. $deploy_count deployed, " .
             // "$cache_hits skipped (cached), $error_count errors."
         );
 
         // $args = [
-        //     'deploy_count' => $deploy_count,
-        //     'error_count' => $error_count,
-        //     'cache_hits' => $cache_hits,
+        // 'deploy_count' => $deploy_count,
+        // 'error_count' => $error_count,
+        // 'cache_hits' => $cache_hits,
         // ];
 
         // do_action( 'wp2static_cloudflare_workers_deployment_complete', $args );
