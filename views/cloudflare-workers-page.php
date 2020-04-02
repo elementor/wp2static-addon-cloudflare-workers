@@ -55,7 +55,7 @@
                     name="<?php echo $view['options']['apiToken']->name; ?>"
                     type="password"
                     value="<?php echo $view['options']['apiToken']->value !== '' ?
-                        \WP2StaticCloudflareWorkers\Controller::encrypt_decrypt('decrypt', $view['options']['apiToken']->value) :
+                        \WP2Static\Controller::encrypt_decrypt('decrypt', $view['options']['apiToken']->value) :
                         ''; ?>"
                 />
             </td>
