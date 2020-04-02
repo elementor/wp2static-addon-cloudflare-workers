@@ -26,7 +26,7 @@ class CloudflareWorkers {
     public function __construct() {
         $this->account_id = Controller::getValue( 'accountID' );
         $this->namespace_id = Controller::getValue( 'namespaceID' );
-        $this->api_token = \WP2StaticCloudflareWorkers\Controller::encrypt_decrypt(
+        $this->api_token = \WP2Static\Controller::encrypt_decrypt(
             'decrypt',
             Controller::getValue( 'apiToken' )
         );

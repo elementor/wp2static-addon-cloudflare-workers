@@ -24,7 +24,7 @@ class Deployer {
 
         $account_id = Controller::getValue( 'accountID' );
         $namespace_id = Controller::getValue( 'namespaceID' );
-        $api_token = \WP2StaticCloudflareWorkers\Controller::encrypt_decrypt(
+        $api_token = \WP2Static\Controller::encrypt_decrypt(
             'decrypt',
             Controller::getValue( 'apiToken' )
         );
@@ -144,7 +144,7 @@ class Deployer {
 
         $account_id = Controller::getValue( 'accountID' );
         $namespace_id = Controller::getValue( 'namespaceID' );
-        $api_token = \WP2StaticCloudflareWorkers\Controller::encrypt_decrypt(
+        $api_token = \WP2Static\Controller::encrypt_decrypt(
             'decrypt',
             Controller::getValue( 'apiToken' )
         );
@@ -256,19 +256,22 @@ class Deployer {
                     ],
                 );
 
-            } catch (\GuzzleHttp\Exception\RequestException $e) {
-                if ($e->hasResponse()) {
+            } catch ( \GuzzleHttp\Exception\RequestException $e ) {
+                if ( $e->hasResponse() ) {
                     $response = $e->getResponse();
-                    error_log( $response->getStatusCode() );
 
-                    \WP2Static\WsLog::l( 'Error from Cloudflare API: ' . $response->getStatusCode() );
+                    if ( $response ) {
+                        error_log( (string) $response->getStatusCode() );
 
-                    error_log( $response->getReasonPhrase() );
-                    error_log( (string) $response->getBody() );
-                    error_log( json_decode( (string) $response->getBody() ) );
-                    error_log( print_r( $response->getHeaders(), true ) );
-                    error_log( $response->hasHeader('Content-Type') );
-                    error_log( $response->getHeader('Content-Type')[0] );
+                        \WP2Static\WsLog::l(
+                            'Error from Cloudflare API: ' . $response->getStatusCode()
+                        );
+
+                        error_log( $response->getReasonPhrase() );
+                        error_log( (string) $response->getBody() );
+                        error_log( json_decode( (string) $response->getBody() ) );
+                        error_log( print_r( $response->getHeaders(), true ) );
+                    }
                 }
             }
 
