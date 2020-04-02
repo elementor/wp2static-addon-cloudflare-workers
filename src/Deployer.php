@@ -137,7 +137,6 @@ class Deployer {
         do_action( 'wp2static_cloudflare_workers_deployment_complete', $args );
     }
 
-    // TODO: see if efficient implementation is possible
     public function bulk_upload_files( string $processed_site_path ) : void {
         if ( ! is_dir( $processed_site_path ) ) {
             return;
@@ -182,7 +181,6 @@ class Deployer {
 
         $files_in_batch = 0;
         $file_limit = 10000;
-        // $file_limit = 100;
 
         foreach ( $iterator as $filename => $file_object ) {
             if ( $files_in_batch === $file_limit ) {
@@ -248,15 +246,31 @@ class Deployer {
                 ];
             }
 
-            // upload a batch of files
-            $res = $client->request(
-                'PUT',
-                "accounts/$account_id/storage/kv/namespaces/$namespace_id/bulk",
-                [
-                    'headers' => $headers,
-                    'json' => $bulk_key_values,
-                ],
-            );
+            try {
+                $res = $client->request(
+                    'PUT',
+                    "accounts/$account_id/storage/kv/namespaces/$namespace_id/bulk",
+                    [
+                        'headers' => $headers,
+                        'json' => $bulk_key_values,
+                    ],
+                );
+
+            } catch (\GuzzleHttp\Exception\RequestException $e) {
+                if ($e->hasResponse()) {
+                    $response = $e->getResponse();
+                    error_log( $response->getStatusCode() );
+
+                    \WP2Static\WsLog::l( 'Error from Cloudflare API: ' . $response->getStatusCode() );
+
+                    error_log( $response->getReasonPhrase() );
+                    error_log( (string) $response->getBody() );
+                    error_log( json_decode( (string) $response->getBody() ) );
+                    error_log( print_r( $response->getHeaders(), true ) );
+                    error_log( $response->hasHeader('Content-Type') );
+                    error_log( $response->getHeader('Content-Type')[0] );
+                }
+            }
 
             // TODO: check response body, add paths to cache
         }
