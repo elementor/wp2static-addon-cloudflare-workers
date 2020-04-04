@@ -249,7 +249,7 @@ class Controller {
 
         $api_token =
             $_POST['apiToken'] ?
-            \WP2Static\Controller::encrypt_decrypt(
+            \WP2Static\CoreOptions::encrypt_decrypt(
                 'encrypt',
                 sanitize_text_field( $_POST['apiToken'] )
             ) : '';

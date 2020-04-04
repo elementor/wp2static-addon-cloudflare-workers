@@ -24,7 +24,7 @@ class Deployer {
 
         $account_id = Controller::getValue( 'accountID' );
         $namespace_id = Controller::getValue( 'namespaceID' );
-        $api_token = \WP2Static\Controller::encrypt_decrypt(
+        $api_token = \WP2Static\CoreOptions::encrypt_decrypt(
             'decrypt',
             Controller::getValue( 'apiToken' )
         );
@@ -144,7 +144,7 @@ class Deployer {
 
         $account_id = Controller::getValue( 'accountID' );
         $namespace_id = Controller::getValue( 'namespaceID' );
-        $api_token = \WP2Static\Controller::encrypt_decrypt(
+        $api_token = \WP2Static\CoreOptions::encrypt_decrypt(
             'decrypt',
             Controller::getValue( 'apiToken' )
         );
@@ -181,6 +181,7 @@ class Deployer {
 
         $files_in_batch = 0;
         $file_limit = 10000;
+        $paths_in_batch = [];
 
         foreach ( $iterator as $filename => $file_object ) {
             if ( $files_in_batch === $file_limit ) {
@@ -192,6 +193,7 @@ class Deployer {
             $real_filepath = realpath( $filename );
 
             if ( \WP2Static\DeployCache::fileisCached( $filename ) ) {
+                $cache_hits++;
                 continue;
             }
 
@@ -229,7 +231,11 @@ class Deployer {
 
             $bulk_key_values = [];
 
+            $batch_size = count( $batch );
+
             foreach ( $batch as $put_object ) {
+                $paths_in_batch[] = $put_object->kv_key;
+
                 // put file contents to path key
                 $bulk_key_values[] = [
                     'key' => $put_object->kv_key,
@@ -275,22 +281,32 @@ class Deployer {
                 }
             }
 
-            // TODO: check response body, add paths to cache
+            $result = json_decode( (string) $res->getBody() );
+
+            if ( $result ) {
+                if ( $result->success ) {
+                    $deploy_count += $batch_size;
+
+                    foreach ( $batch as $put_object ) {
+                        // TODO: optimize with DeployCache::addBulkFiles()
+                        \WP2Static\DeployCache::addFile( $put_object->kv_key );
+                    }
+                }
+            }
         }
 
         \WP2Static\WsLog::l(
-            'Deployment complete'
-            // "Deployment complete. $deploy_count deployed, " .
-            // "$cache_hits skipped (cached), $error_count errors."
+            "Deployment complete. $deploy_count deployed, " .
+            "$cache_hits skipped (cached), $error_count errors."
         );
 
-        // $args = [
-        // 'deploy_count' => $deploy_count,
-        // 'error_count' => $error_count,
-        // 'cache_hits' => $cache_hits,
-        // ];
+        $args = [
+            'deploy_count' => $deploy_count,
+            'error_count' => $error_count,
+            'cache_hits' => $cache_hits,
+        ];
 
-        // do_action( 'wp2static_cloudflare_workers_deployment_complete', $args );
+        do_action( 'wp2static_cloudflare_workers_deployment_complete', $args );
     }
 }
 
