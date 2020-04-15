@@ -23,4 +23,4 @@ parameters:
         - '#Property WP2StaticCloudflareWorkers\\CloudflareWorkers::\$client has no typehint specified.#'
         - '#Property WP2StaticCloudflareWorkers\\CloudflareWorkers::\$headers has no typehint specified.#'
         - '#Property WP2StaticCloudflareWorkers\\CloudflareWorkers::\$key_names has no typehint specified.#'
-        - '#Call to static method encrypt_decrypt\(\) on an unknown class WP2Static\\Controller.#'                                             
+        - '#Call to static method encrypt_decrypt\(\) on an unknown class WP2Static\\CoreOptions.#'                                             
