@@ -4,12 +4,6 @@ namespace WP2StaticCloudflareWorkers;
 
 class Controller {
     public function run() : void {
-        $options = $this->getOptions();
-
-        if ( ! isset( $options['namespaceID'] ) ) {
-            $this->seedOptions();
-        }
-
         add_filter(
             'wp2static_add_menu_items',
             [ 'WP2StaticCloudflareWorkers\Controller', 'addSubmenuPage' ]
@@ -168,6 +162,11 @@ class Controller {
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta( $sql );
 
+        $options = self::getOptions();
+
+        if ( ! isset( $options['namespaceID'] ) ) {
+            self::seedOptions();
+        }
     }
 
     public static function deactivate_for_single_site() : void {
