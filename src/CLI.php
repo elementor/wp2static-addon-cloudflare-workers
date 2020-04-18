@@ -43,7 +43,17 @@ class CLI {
                     return;
                 }
 
-                WP_CLI::line( Controller::getOptionValue( $option_name ) );
+                // decrypt apiToken
+                if ( $option_name === 'apiToken' ) {
+                    $option_value = \WP2Static\CoreOptions::encrypt_decrypt(
+                        'decrypt',
+                        Controller::getValue( $option_name )
+                    );
+                } else {
+                    $option_value = Controller::getValue( $option_name );
+                }
+
+                WP_CLI::line( $option_value );
             }
 
             if ( $arg === 'set' ) {
@@ -52,16 +62,23 @@ class CLI {
                     return;
                 }
 
-                if ( empty( $value ) ) {
-                    WP_CLI::error( 'Missing required argument: <value>' );
-                    return;
+                $option_value = isset( $args[3] ) ? $args[3] : null;
+
+                if ( empty( $option_value ) ) {
+                    $option_value = '';
                 }
 
-                Controller::saveOption( $option_name, $value );
+                Controller::saveOption( $option_name, $option_value );
             }
 
             if ( $arg === 'list' ) {
                 $options = Controller::getOptions();
+
+                // decrypt apiToken
+                $options['apiToken']->value = \WP2Static\CoreOptions::encrypt_decrypt(
+                    'decrypt',
+                    $options['apiToken']->value
+                );
 
                 WP_CLI\Utils\format_items(
                     'table',
