@@ -113,10 +113,11 @@ class Controller {
 
         $table_name = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
 
-        $query_string = "INSERT INTO $table_name (name, value) VALUES (%s, %s);";
-        $query = $wpdb->prepare( $query_string, $name, $value );
-
-        $wpdb->query( $query );
+        $wpdb->update(
+            $table_name,
+            [ 'value' => $value ],
+            [ 'name' => $name ]
+        );
     }
 
     public static function renderCloudflareWorkersPage() : void {

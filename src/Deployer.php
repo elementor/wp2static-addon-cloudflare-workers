@@ -155,11 +155,6 @@ class Deployer {
             Controller::getValue( 'apiToken' )
         );
 
-        // DEBUG options set via CLI not showing
-        error_log('$account_id: ' . $account_id);
-        error_log('$namespace_id: ' . $namespace_id);
-        error_log('$api_token: ' . $api_token);
-
         if ( ! $account_id || ! $namespace_id || ! $api_token ) {
             $err = 'Unable to connect to Cloudflare API without ' .
             'API Token, Account ID & Namespace ID set';

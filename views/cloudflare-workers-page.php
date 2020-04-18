@@ -64,7 +64,7 @@
         <tr>
             <td style="width:50%;">
                 <label
-                    for="<?php echo $view['options']['useBulkUpload']->name; ?> (experimental)"
+                    for="<?php echo $view['options']['useBulkUpload']->name; ?>"
                 /><?php echo $view['options']['useBulkUpload']->label; ?></label>
             </td>
             <td>
