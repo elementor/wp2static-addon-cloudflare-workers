@@ -31,7 +31,44 @@ class CLI {
         }
 
         if ( $action === 'options' ) {
-            WP_CLI::line( 'TBC setting options for CF Workers addon' );
+            if ( empty( $arg ) ) {
+                WP_CLI::error( 'Missing required argument: <get|set|list>' );
+            }
+
+            $option_name = isset( $args[2] ) ? $args[2] : null;
+
+            if ( $arg === 'get' ) {
+                if ( empty( $option_name ) ) {
+                    WP_CLI::error( 'Missing required argument: <option-name>' );
+                    return;
+                }
+
+                WP_CLI::line( Controller::getOptionValue( $option_name ) );
+            }
+
+            if ( $arg === 'set' ) {
+                if ( empty( $option_name ) ) {
+                    WP_CLI::error( 'Missing required argument: <option-name>' );
+                    return;
+                }
+
+                if ( empty( $value ) ) {
+                    WP_CLI::error( 'Missing required argument: <value>' );
+                    return;
+                }
+
+                Controller::saveOption( $option_name, $value );
+            }
+
+            if ( $arg === 'list' ) {
+                $options = Controller::getOptions();
+
+                WP_CLI\Utils\format_items(
+                    'table',
+                    $options,
+                    [ 'name', 'value' ]
+                );
+            }
         }
 
         if ( $action === 'keys' ) {
