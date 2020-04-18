@@ -68,6 +68,14 @@ class CLI {
                     $option_value = '';
                 }
 
+                // decrypt apiToken
+                if ( $option_name === 'apiToken' ) {
+                    $option_value = \WP2Static\CoreOptions::encrypt_decrypt(
+                        'encrypt',
+                        $option_value
+                    );
+                }
+
                 Controller::saveOption( $option_name, $option_value );
             }
 
