@@ -23,6 +23,8 @@ class CloudflareWorkers {
     public $headers;
     public $key_names;
 
+    const MAX_KEYS_DELETE = 10000;
+
     public function __construct() {
         $this->account_id = Controller::getValue( 'accountID' );
         $this->namespace_id = Controller::getValue( 'namespaceID' );
@@ -103,19 +105,19 @@ class CloudflareWorkers {
         $this->get_page_of_keys( '' );
 
         $total_keys = count( $this->key_names );
-        \WP2Static\WsLog::l( "Attempting to delte $total_keys keys" );
+        \WP2Static\WsLog::l( "Attempting to delete $total_keys keys" );
 
         if ( ! $total_keys ) {
             return false;
         }
 
         // Note: API allows bulk deletion up to 10,000 at a time
-        $batches = ceil( $total_keys / 10000 );
+        $batches = ceil( $total_keys / self::MAX_KEYS_DELETE );
 
         for ( $batch = 0; $batch < $batches; $batch++ ) {
-            \WP2Static\WsLog::l( "Deleting batch $batch of $batches" );
+            \WP2Static\WsLog::l( 'Deleting batch ' . ($batch + 1) . " of $batches" );
 
-            $keys_to_delete = array_slice( $this->key_names, 0, 10000 );
+            $keys_to_delete = array_slice( $this->key_names, $batch * self::MAX_KEYS_DELETE, self::MAX_KEYS_DELETE );
 
             \WP2Static\WsLog::l( count( $keys_to_delete ) . ' keys in batch' );
 
