@@ -23,6 +23,22 @@ class Controller {
             1
         );
 
+        add_action(
+            'admin_menu',
+            [ $this, 'addOptionsPage' ],
+            15,
+            1
+        );
+
+        do_action(
+            'wp2static_register_addon',
+            'wp2static-addon-cloudflare-workers',
+            'deploy',
+            'Cloudflare Workers Deployment',
+            'https://wp2static.com/addons/cloudflare-workers/',
+            'Deploys to Cloudflare Workers'
+        );
+
         if ( defined( 'WP_CLI' ) ) {
             \WP_CLI::add_command(
                 'wp2static cloudflare_workers',
@@ -274,7 +290,7 @@ class Controller {
             [ 'name' => 'accountID' ]
         );
 
-        wp_safe_redirect( admin_url( 'admin.php?page=wp2static-cloudflare-workers' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=wp2static-addon-cloudflare-workers' ) );
         exit;
     }
 
@@ -300,6 +316,17 @@ class Controller {
         }
 
         return $option_value;
+    }
+
+    public function addOptionsPage() : void {
+        add_submenu_page(
+            '',
+            'Cloudflare Workers Deployment Options',
+            'Cloudflare Workers Deployment Options',
+            'manage_options',
+            'wp2static-addon-cloudflare-workers',
+            [ $this, 'renderCloudflareWorkersPage' ]
+        );
     }
 }
 
