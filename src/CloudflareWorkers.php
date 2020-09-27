@@ -115,15 +115,20 @@ class CloudflareWorkers {
         $batches = ceil( $total_keys / self::MAX_KEYS_DELETE );
 
         for ( $batch = 0; $batch < $batches; $batch++ ) {
-            \WP2Static\WsLog::l( 'Deleting batch ' . ($batch + 1) . " of $batches" );
+            \WP2Static\WsLog::l( 'Deleting batch ' . ( $batch + 1 ) . " of $batches" );
 
-            $keys_to_delete = array_slice( $this->key_names, $batch * self::MAX_KEYS_DELETE, self::MAX_KEYS_DELETE );
+            $keys_to_delete = array_slice(
+                $this->key_names,
+                $batch * self::MAX_KEYS_DELETE,
+                self::MAX_KEYS_DELETE
+            );
 
             \WP2Static\WsLog::l( count( $keys_to_delete ) . ' keys in batch' );
 
             $res = $this->client->request(
                 'DELETE',
-                "accounts/$this->account_id/storage/kv/namespaces/$this->namespace_id/bulk",
+                "accounts/$this->account_id/storage/kv/namespaces/" .
+                "$this->namespace_id/bulk",
                 [
                     'headers' => $this->headers,
                     'json' => $keys_to_delete,
