@@ -1,14 +1,14 @@
 #!/bin/bash
 
-######################################
+######################################################
 ##
-## Build WP2Static Zip Deployment Addon
+## Build WP2Static Cloudflare Workers Deployment Addon
 ##
 ## script archive_name dont_minify
 ##
 ## places archive in $HOME/Downloads
 ##
-######################################
+######################################################
 
 # run script from project root
 EXEC_DIR=$(pwd)
@@ -20,22 +20,16 @@ mkdir -p $TMP_DIR
 rm -Rf $TMP_DIR/wp2static-addon-cloudflare-workers
 mkdir $TMP_DIR/wp2static-addon-cloudflare-workers
 
-
 # clear dev dependencies
 rm -Rf $EXEC_DIR/vendor/*
 # load prod deps and optimize loader
-composer install --no-dev --optimize-autoloader
-
+composer install --quiet --no-dev --optimize-autoloader
 
 # cp all required sources to build dir
 cp -r $EXEC_DIR/wp2static-addon-cloudflare-workers.php $TMP_DIR/wp2static-addon-cloudflare-workers/
 cp -r $EXEC_DIR/src $TMP_DIR/wp2static-addon-cloudflare-workers/
-cp -r $EXEC_DIR/assets $TMP_DIR/wp2static-addon-cloudflare-workers/
 cp -r $EXEC_DIR/vendor $TMP_DIR/wp2static-addon-cloudflare-workers/
-cp -r $EXEC_DIR/readme.txt $TMP_DIR/wp2static-addon-cloudflare-workers/
 cp -r $EXEC_DIR/views $TMP_DIR/wp2static-addon-cloudflare-workers/
-cp -r $EXEC_DIR/admin $TMP_DIR/wp2static-addon-cloudflare-workers/
-cp -r $EXEC_DIR/js $TMP_DIR/wp2static-addon-cloudflare-workers/
 
 cd $TMP_DIR
 
@@ -43,12 +37,7 @@ cd $TMP_DIR
 find . -type d -exec chmod 755 {} \;
 find . -type f -exec chmod 644 {} \;
 
-# strip comments and whitespace from each PHP file
-if [ -z "$2" ]; then
-  find .  ! -name 'wp2static-addon-cloudflare-workers.php' -name \*.php -exec $EXEC_DIR/tools/compress_php_file {} \;
-fi
-
-zip -r -9 ./$1.zip ./wp2static-addon-cloudflare-workers
+zip --quiet -r -9 ./$1.zip ./wp2static-addon-cloudflare-workers
 
 cd -
 
@@ -61,4 +50,4 @@ cd $EXEC_DIR
 # clear dev dependencies
 rm -Rf $EXEC_DIR/vendor/*
 # load prod deps
-composer install
+composer install --quiet
