@@ -70,7 +70,7 @@ class CloudflareWorkers {
 
             if ( $result->messages ) {
                 \WP2Static\WsLog::l( 'Messages from CF API' );
-                \WP2Static\WsLog::l( join( PHP_EOL, $result->errors ) );
+                \WP2Static\WsLog::l( join( PHP_EOL, (array) $result->errors ) );
             }
 
             if ( $result->success === true ) {
