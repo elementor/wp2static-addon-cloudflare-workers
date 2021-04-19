@@ -1,0 +1,8 @@
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+parameters:
+    level: max
+    phpVersion: 80000
+    inferPrivatePropertyTypeFromConstructor: true
+    paths:
+        - src/

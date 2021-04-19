@@ -18,35 +18,29 @@
         "source": "https://github.com/WP2Static/wp2static-addon-cloudflare-workers"
     },
     "require": {
-        "php": ">=7.2",
-        "guzzlehttp/guzzle": "^6.5"
+        "php": "^7.4 || ^8.0",
+        "guzzlehttp/guzzle": "^7.3"
     },
     "require-dev": {
-        "phpstan/phpstan": "*",
-        "thecodingmachine/phpstan-strict-rules": "*",
-        "szepeviktor/phpstan-wordpress": "*",
-        "squizlabs/php_codesniffer": "*",
-        "phpunit/phpunit": "*",
+        "10up/wp_mock": "^0.4.2",
         "dealerdirect/phpcodesniffer-composer-installer": "*",
-        "wp-coding-standards/wpcs": "*",
+        "mikey179/vfsstream": "*",
+        "mockery/mockery": "*",
+        "pestphp/pest": "^1.0.1",
         "php-parallel-lint/php-parallel-lint": "*",
-        "10up/wp_mock": "^0.4.2"
+        "phpcompatibility/php-compatibility": "*",
+        "phpunit/phpunit": "*",
+        "phpstan/phpstan-strict-rules": "*",
+        "squizlabs/php_codesniffer": "dev-master",
+        "szepeviktor/phpstan-wordpress": "*",
+        "szepeviktor/phpcs-psr-12-neutron-hybrid-ruleset": "*"
     },
     "autoload": {
         "psr-4": {
             "WP2StaticCloudflareWorkers\\": "src/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "PHPStan\\WordPress\\": "tests/phpstan/",
-            "WP2StaticCloudflareWorkers\\": "src/"
-        }
-    },
     "config": {
-        "platform": {
-          "php": "7.2.17"
-        },
         "preferred-install": {
             "*": "dist"
         },
@@ -54,15 +48,18 @@
     },
     "scripts": {
         "phpstan": "php -d memory_limit=-1 ./vendor/bin/phpstan analyse",
-        "phpcs": "vendor/bin/phpcs --standard=./tools/phpcs.xml --ignore=*/tests/*,*/admin/*,**/coverage/*,*.js,*/vendor/*,*/views/*.php ./",
-        "phpcbf": "vendor/bin/phpcbf --standard=./tools/phpcs.xml --ignore=*/js/*,*/tests/*,*/admin/*,*/coverage/*,*.js,*/vendor/*,*/views/*.php ./",
-        "phpunit": "vendor/bin/phpunit ./tests/unit/",
-        "coverage": "vendor/bin/phpunit tests/unit --coverage-html coverage --whitelist src/",
+        "phpcbf": "vendor/bin/phpcbf --standard=conf/phpcs.xml .",
+        "phpcs":  "vendor/bin/phpcs --standard=conf/phpcs.xml .",
+        "pest": "vendor/bin/pest",
+        "coverage": "vendor/bin/pest --coverage",
         "lint": "vendor/bin/parallel-lint --exclude vendor .",
         "test": [
-            "@lint",
-            "@phpcs",
-            "@phpstan"
+           "composer validate --strict",
+           "@lint",
+           "@phpcs",
+           "@phpstan",
+           "@pest",
+           "@coverage"
         ],
         "build": "/bin/sh tools/build_release.sh"
     }

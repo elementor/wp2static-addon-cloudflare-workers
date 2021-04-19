@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    bootstrap="tests/Unit/bootstrap.php"
+>
+  <testsuites>
+    <testsuite name="Unit Tests">
+      <directory suffix=".php">tests/Unit</directory>
+    </testsuite>
+  </testsuites>
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+  </coverage>
+</phpunit>

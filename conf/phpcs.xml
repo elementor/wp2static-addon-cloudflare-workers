@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<ruleset name="WhatWouldViktorDoCodingStyle">
+    <description>Inspired by @szepeviktor's ruleset.</description>
+
+    <!-- Define targets for inspection  -->
+    <file>src</file>
+
+    <!-- Requires 4.0 branch of phpcs & now only working via CLI -->
+    <file>bin/whatwouldviktordo</file>
+
+    <!-- Exclude Composer vendor packages -->
+    <exclude-pattern>./vendor/</exclude-pattern>
+
+    <rule ref="PSR12NeutronRuleset">
+        <!-- NeutronStandard bug -->
+        <exclude name="NeutronStandard.Functions.TypeHint.NoReturnType"/>
+        <exclude name="ImportDetection.Imports.RequireImports"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint"/>
+        <exclude name="WordPress.WP.AlternativeFunctions"/>
+        <exclude name="Squiz.WhiteSpace.LanguageConstructSpacing"/>
+    </rule>
+
+    <rule ref="PHPCompatibility">
+      <config name="testVersion" value="7.4-"/>
+    </rule>
+
+    <!-- Pest test cases have $this magically set -->
+    <rule ref="PHPCompatibility.FunctionDeclarations.NewClosure">
+        <exclude-pattern>/tests/Unit/*\.php</exclude-pattern>
+    </rule>
+</ruleset>
