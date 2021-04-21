@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Auditor.php
+ *
+ * @package           WP2StaticCloudflareWorkers
+ * @author            Leon Stafford <me@ljs.dev>
+ * @license           The Unlicense
+ * @link              https://unlicense.org
+ */
+
 declare(strict_types=1);
 
 namespace WP2StaticCloudflareWorkers;
@@ -8,75 +17,77 @@ use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use GuzzleHttp\Client;
 
+/**
+ * Deploys to Cloudflare Workers
+ */
 class Deployer
 {
 
-    public function upload_files( string $processed_site_path ): void
+    public function uploadFiles( string $processedSitePath ): void
     {
         if (Controller::getValue('useBulkUpload')) {
-            $this->bulk_upload_files($processed_site_path);
+            $this->bulkUploadFiles($processedSitePath);
             return;
         }
 
-        $this->singlular_upload_files($processed_site_path);
+        $this->singularUploadFiles($processedSitePath);
     }
 
-    public function singlular_upload_files( string $processed_site_path ): void
+    public function singularUploadFiles( string $processedSitePath ): void
     {
-        if (! is_dir($processed_site_path)) {
+        if (! is_dir($processedSitePath)) {
             return;
         }
 
-        $account_id = Controller::getValue('accountID');
-        $namespace_id = Controller::getValue('namespaceID');
-        $api_token = \WP2Static\CoreOptions::encrypt_decrypt(
+        $accountID = Controller::getValue('accountID');
+        $namespaceID = Controller::getValue('namespaceID');
+        $APIToken = \WP2Static\CoreOptions::encrypt_decrypt(
             'decrypt',
             Controller::getValue('apiToken')
         );
 
-        if (! $account_id || ! $namespace_id || ! $api_token) {
+        if (! $accountID || ! $namespaceID || ! $APIToken) {
             $err = 'Unable to connect to Cloudflare API without ' .
             'API Token, Account ID & Namespace ID set';
             \WP2Static\WsLog::l($err);
             return;
         }
 
-        $deploy_count = 0;
-        $error_count = 0;
-        $cache_hits = 0;
+        $deployCount = 0;
+        $errorCount = 0;
+        $cacheHits = 0;
 
         $client = new Client([ 'base_uri' => 'https://api.cloudflare.com/client/v4/' ]);
 
         $headers = [
-            'Authorization' => 'Bearer ' . $api_token,
+            'Authorization' => 'Bearer ' . $APIToken,
         ];
 
         // iterate each file in ProcessedSite
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator(
-                $processed_site_path,
+                $processedSitePath,
                 RecursiveDirectoryIterator::SKIP_DOTS
             )
         );
 
-        foreach ($iterator as $filename => $file_object) {
-            $base_name = basename($filename);
+        foreach (array_keys($iterator) as $filename) {
+            $baseName = basename($filename);
 
-            if ($base_name === '.' || $base_name === '..') {
+            if ($baseName === '.' || $baseName === '..') {
                 continue;
             }
 
-            $real_filepath = realpath($filename);
+            $realFilepath = realpath($filename);
 
-            $key = str_replace($processed_site_path, '', $filename);
+            $key = str_replace($processedSitePath, '', $filename);
 
-            error_log('checking deploy cache for ' . $key);
             if (\WP2Static\DeployCache::fileisCached($key)) {
-                $cache_hits++;
+                $cacheHits += 1;
                 continue;
             }
 
-            if (! $real_filepath) {
+            if (! $realFilepath) {
                 $err = 'Trying to deploy unknown file: ' . $filename;
                 \WP2Static\WsLog::l($err);
                 continue;
@@ -90,16 +101,18 @@ class Deployer
             }
 
             // NOTE: urlencode needed on singlular transfers but not bulk
+            // TODO: check using raw encoding
+            // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode
             $key = urlencode($key);
 
-            $mime_type = MimeTypes::GuessMimeType($filename);
+            $mimeType = MimeTypes::GuessMimeType($filename);
 
             // TODO: try / catch before recording as success/adding to DeployCache
 
             // put file contents to path key
             $res = $client->request(
                 'PUT',
-                "accounts/$account_id/storage/kv/namespaces/$namespace_id/values/$key",
+                "accounts/$accountID/storage/kv/namespaces/$namespaceID/values/$key",
                 [
                     'headers' => $headers,
                     'body' => file_get_contents($filename),
@@ -109,10 +122,10 @@ class Deployer
             // put content type to path_ct key
             $res = $client->request(
                 'PUT',
-                "accounts/$account_id/storage/kv/namespaces/$namespace_id/values/${key}_ct",
+                "accounts/$accountID/storage/kv/namespaces/$namespaceID/values/${key}_ct",
                 [
                     'headers' => $headers,
-                    'body' => $mime_type,
+                    'body' => $mimeType,
                 ],
             );
 
@@ -123,12 +136,12 @@ class Deployer
             }
 
             if ($result->success) {
-                $deploy_count++;
+                $deployCount += 1;
                 \WP2Static\DeployCache::addFile(
-                    str_replace($processed_site_path, '', $filename)
+                    str_replace($processedSitePath, '', $filename)
                 );
             } else {
-                $error_count++;
+                $errorCount += 1;
                 $err = 'Failed to deploy file: ' . $filename;
                 \WP2Static\WsLog::l($err);
 
@@ -139,86 +152,86 @@ class Deployer
         }
 
         \WP2Static\WsLog::l(
-            "Deployment complete. $deploy_count deployed, " .
-            "$cache_hits skipped (cached), $error_count errors."
+            "Deployment complete. $deployCount deployed, " .
+            "$cacheHits skipped (cached), $errorCount errors."
         );
 
         $args = [
-            'deploy_count' => $deploy_count,
-            'error_count' => $error_count,
-            'cache_hits' => $cache_hits,
+            'deployCount' => $deployCount,
+            'errorCount' => $errorCount,
+            'cacheHits' => $cacheHits,
         ];
 
         do_action('wp2static_cloudflare_workers_deployment_complete', $args);
     }
 
-    public function bulk_upload_files( string $processed_site_path ): void
+    public function bulkUploadFiles( string $processedSitePath ): void
     {
-        if (! is_dir($processed_site_path)) {
+        if (! is_dir($processedSitePath)) {
             return;
         }
 
-        $account_id = Controller::getValue('accountID');
-        $namespace_id = Controller::getValue('namespaceID');
-        $api_token = \WP2Static\CoreOptions::encrypt_decrypt(
+        $accountID = Controller::getValue('accountID');
+        $namespaceID = Controller::getValue('namespaceID');
+        $APIToken = \WP2Static\CoreOptions::encrypt_decrypt(
             'decrypt',
             Controller::getValue('apiToken')
         );
 
-        if (! $account_id || ! $namespace_id || ! $api_token) {
+        if (! $accountID || ! $namespaceID || ! $APIToken) {
             $err = 'Unable to connect to Cloudflare API without ' .
             'API Token, Account ID & Namespace ID set';
             \WP2Static\WsLog::l($err);
             return;
         }
 
-        $deploy_count = 0;
-        $error_count = 0;
-        $cache_hits = 0;
+        $deployCount = 0;
+        $errorCount = 0;
+        $cacheHits = 0;
 
         $client = new Client([ 'base_uri' => 'https://api.cloudflare.com/client/v4/' ]);
 
         $headers = [
-            'Authorization' => 'Bearer ' . $api_token,
+            'Authorization' => 'Bearer ' . $APIToken,
             'Content-Type' => 'application/json',
         ];
 
         // iterate each file in ProcessedSite
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator(
-                $processed_site_path,
+                $processedSitePath,
                 RecursiveDirectoryIterator::SKIP_DOTS
             )
         );
 
         // per batch write is < 100MB or < 10,000 files
-        $batch_file_size = 0;
-        $batch_number = 0;
+        // TODO: implement batch file size checking
+        // $batchFileSize = 0;
+        $batchNumber = 0;
         $batches = [];
 
-        $files_in_batch = 0;
+        $filesInBatch = 0;
         // TODO: add select menu for user-overriding batch size or be clever and auto-retry
         // with smaller batch sizes on errors
-        $file_limit = 10000;
-        $paths_in_batch = [];
+        $fileLimit = 10000;
+        $pathsInBatch = [];
 
-        foreach ($iterator as $filename => $file_object) {
-            if ($files_in_batch === $file_limit) {
-                $batch_number++;
-                $files_in_batch = 0;
+        foreach (array_keys($iterator) as $filename) {
+            if ($filesInBatch === $fileLimit) {
+                $batchNumber += 1;
+                $filesInBatch = 0;
             }
 
-            $base_name = basename($filename);
-            $real_filepath = realpath($filename);
+            $realFilepath = realpath($filename);
 
-            $key = str_replace($processed_site_path, '', $filename);
+            $key = str_replace($processedSitePath, '', $filename);
 
             if (\WP2Static\DeployCache::fileisCached($key)) {
-                $cache_hits++;
+                $cacheHits += 1;
                 continue;
             }
 
-            if (! $real_filepath) {
+            if (! $realFilepath) {
                 $err = 'Trying to deploy unknown file: ' . $filename;
                 \WP2Static\WsLog::l($err);
                 continue;
@@ -232,53 +245,54 @@ class Deployer
             }
 
             $key = str_replace('/index.html', '/', $key);
-            $mime_type = MimeTypes::GuessMimeType($filename);
+            $mimeType = MimeTypes::GuessMimeType($filename);
 
-            $put_object = new \stdClass();
-            $put_object->kv_key = $key;
-            $put_object->content_type = $mime_type;
-            $put_object->filename = $filename;
+            $putObject = new \stdClass();
+            $putObject->kvKey = $key;
+            $putObject->contentType = $mimeType;
+            $putObject->filename = $filename;
 
-            $batches[$batch_number][] = $put_object;
+            $batches[$batchNumber][] = $putObject;
 
-            $files_in_batch++;
+            $filesInBatch += 1;
         }
 
-        $total_batches = count($batches);
+        $totalBatches = count($batches);
 
         foreach ($batches as $index => $batch) {
-            \WP2Static\WsLog::l('Uploading batch ' . ( $index + 1 ) . " of $total_batches");
+            \WP2Static\WsLog::l('Uploading batch ' . ( $index + 1 ) . " of $totalBatches");
 
-            $bulk_key_values = [];
+            $bulkKeyValues = [];
 
-            $batch_size = count($batch);
+            $batchSize = count($batch);
 
-            foreach ($batch as $put_object) {
-                $paths_in_batch[] = $put_object->kv_key;
+            foreach ($batch as $putObject) {
+                $pathsInBatch[] = $putObject->kvKey;
 
                 // put file contents to path key
-                $bulk_key_values[] = [
-                    'key' => $put_object->kv_key,
+                $bulkKeyValues[] = [
+                    'key' => $putObject->kvKey,
+                    // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
                     'value' => base64_encode(
-                        (string)file_get_contents($put_object->filename)
+                        (string)file_get_contents($putObject->filename)
                     ),
                     'base64' => true,
                 ];
 
                 // put content type to path_ct key
-                $bulk_key_values[] = [
-                    'key' => $put_object->kv_key . '_ct',
-                    'value' => $put_object->content_type,
+                $bulkKeyValues[] = [
+                    'key' => $putObject->kvKey . '_ct',
+                    'value' => $putObject->contentType,
                 ];
             }
 
             try {
                 $res = $client->request(
                     'PUT',
-                    "accounts/$account_id/storage/kv/namespaces/$namespace_id/bulk",
+                    "accounts/$accountID/storage/kv/namespaces/$namespaceID/bulk",
                     [
                         'headers' => $headers,
-                        'json' => $bulk_key_values,
+                        'json' => $bulkKeyValues,
                     ],
                 );
             } catch (\GuzzleHttp\Exception\RequestException $e) {
@@ -294,7 +308,7 @@ class Deployer
                     }
                 }
 
-                $error_count += $batch_size;
+                $errorCount += $batchSize;
 
                 // skip current batch
                 continue;
@@ -310,25 +324,25 @@ class Deployer
                 continue;
             }
 
-            $deploy_count += $batch_size;
+            $deployCount += $batchSize;
 
-            foreach ($batch as $put_object) {
+            foreach ($batch as $putObject) {
                 // TODO: optimize with DeployCache::addBulkFiles()
                 \WP2Static\DeployCache::addFile(
-                    str_replace($processed_site_path, '', $put_object->filename)
+                    str_replace($processedSitePath, '', $putObject->filename)
                 );
             }
         }
 
         \WP2Static\WsLog::l(
-            "Deployment complete. $deploy_count deployed, " .
-            "$cache_hits skipped (cached), $error_count errors."
+            "Deployment complete. $deployCount deployed, " .
+            "$cacheHits skipped (cached), $errorCount errors."
         );
 
         $args = [
-            'deploy_count' => $deploy_count,
-            'error_count' => $error_count,
-            'cache_hits' => $cache_hits,
+            'deployCount' => $deployCount,
+            'errorCount' => $errorCount,
+            'cacheHits' => $cacheHits,
         ];
 
         do_action('wp2static_cloudflare_workers_deployment_complete', $args);
