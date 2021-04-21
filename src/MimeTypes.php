@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WP2StaticCloudflareWorkers;
 
-class MimeTypes {
+class MimeTypes
+{
     /*
      * Takes a filename and returns its mimetype.
      * GuessMimeTypes first looks at the file extension and looks it up
@@ -13,7 +16,8 @@ class MimeTypes {
      * @param string $filename filename
      * @return string mimetype
      */
-    public static function GuessMimeType( string $filename ) : string {
+    public static function GuessMimeType( string $filename ): string
+    {
         static $mime_types = [
             '123' => 'application/vnd.lotus-1-2-3',
             '3dml' => 'text/vnd.in3d.3dml',
@@ -1008,18 +1012,18 @@ class MimeTypes {
             'zmm' => 'application/vnd.handheld-entertainment+xml',
         ];
 
-        $info = strtolower( pathinfo( $filename, PATHINFO_EXTENSION ) );
+        $info = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-        if ( array_key_exists( $info, $mime_types ) ) {
-            return $mime_types[ $info ];
+        if (array_key_exists($info, $mime_types)) {
+            return $mime_types[$info];
         }
 
-        $finfo = finfo_open( FILEINFO_MIME_TYPE );
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
 
-        if ( $finfo ) {
-            $mime_type = finfo_file( $finfo, $filename );
+        if ($finfo) {
+            $mime_type = finfo_file($finfo, $filename);
 
-            if ( $mime_type ) {
+            if ($mime_type) {
                 return $mime_type;
             }
         }

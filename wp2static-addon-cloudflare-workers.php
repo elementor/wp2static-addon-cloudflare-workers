@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Plugin Name:       WP2Static Add-on: Cloudflare Workers Deployment
  * Plugin URI:        https://wp2static.com
@@ -12,20 +14,21 @@
  * Text Domain:       wp2static-addon-cloudflare-workers
  */
 
-if ( ! defined( 'WPINC' ) ) {
+if (! defined('WPINC')) {
     die;
 }
 
-define( 'WP2STATIC_CLOUDFLARE_WORKERS_PATH', plugin_dir_path( __FILE__ ) );
-define( 'WP2STATIC_CLOUDFLARE_WORKERS_VERSION', '1.0-alpha-005' );
+define('WP2STATIC_CLOUDFLARE_WORKERS_PATH', plugin_dir_path(__FILE__));
+define('WP2STATIC_CLOUDFLARE_WORKERS_VERSION', '1.0-alpha-005');
 
 if (
-    file_exists( WP2STATIC_CLOUDFLARE_WORKERS_PATH . 'vendor/autoload.php' )
-    ) {
+    file_exists(WP2STATIC_CLOUDFLARE_WORKERS_PATH . 'vendor/autoload.php')
+) {
     require WP2STATIC_CLOUDFLARE_WORKERS_PATH . 'vendor/autoload.php';
 }
 
-function run_wp2static_addon_cloudflare_workers() {
+function run_wp2static_addon_cloudflare_workers()
+{
     $controller = new WP2StaticCloudflareWorkers\Controller();
     $controller->run();
 }
@@ -41,4 +44,3 @@ register_deactivation_hook(
 );
 
 run_wp2static_addon_cloudflare_workers();
-
