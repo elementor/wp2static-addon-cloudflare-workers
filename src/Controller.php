@@ -171,10 +171,15 @@ class Controller
         $cloudflareWorkersPath =
             \WP2Static\SiteInfo::getPath('uploads') . 'wp2static-processed-site';
 
+        $options = self::getOptions();
+
         $parameters = [
                 'nonce_action' => wp_create_nonce('wp2static-cloudflare-workers-options'),
                 'uploads_path' => \WP2Static\SiteInfo::getPath('uploads'),
-                'options' => self::getOptions(),
+                'admin_post_path' => esc_url(admin_url('admin-post.php')),
+                'options' => $options,
+                'decrypted_api_token' => $options['apiToken']->value ?
+                    \WP2Static\CoreOptions::encrypt_decrypt('decrypt', $options['apiToken']->value) : '',
                 'cloudflare_workers_url' => is_file($cloudflareWorkersPath) ?
                     \WP2Static\SiteInfo::getUrl('uploads') . 'wp2static-processed-site.cf' : '#',
         ];

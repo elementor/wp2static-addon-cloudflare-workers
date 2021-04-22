@@ -3,9 +3,7 @@
 <form
     name="wp2static-cloudflare-workers-save-options"
     method="POST"
-    action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
-
-    <?php wp_nonce_field($view['nonce_action']); ?>
+    action="{$admin_post_path}">
 
     <input
       type="hidden"
@@ -55,39 +53,33 @@
 
         <tr>
             <td style="width:50%;">
-                <label
-                    for="<?php echo $view['options']['apiToken']->name; ?>"
-                ><?php echo $view['options']['apiToken']->label; ?></label>
+                <label for="{$options[apiToken]->name}">
+                  {$options[apiToken]->label}
+                </label>
             </td>
             <td>
                 <input
-                    id="<?php echo $view['options']['apiToken']->name; ?>"
-                    name="<?php echo $view['options']['apiToken']->name; ?>"
+                    id="{$options[apiToken]->name}"
+                    name="{$options[apiToken]->name}"
                     type="password"
-                    value="
-                    <?php
-                    echo $view['options']['apiToken']->value !== '' ?
-                        \WP2Static\CoreOptions::encrypt_decrypt('decrypt', $view['options']['apiToken']->value) :
-                        '';
-                    ?>
-                        "
+                    value="{$decrypted_api_token}"
                 />
             </td>
         </tr>
 
         <tr>
             <td style="width:50%;">
-                <label
-                    for="<?php echo $view['options']['useBulkUpload']->name; ?>"
-                /><?php echo $view['options']['useBulkUpload']->label; ?></label>
+                <label for="{$options[useBulkUpload]->name}" />
+                  {$options[useBulkUpload]->label}
+                </label>
             </td>
             <td>
                 <input
                     type="checkbox"
-                    id="<?php echo $view['options']['useBulkUpload']->name; ?>"
-                    name="<?php echo $view['options']['useBulkUpload']->name; ?>"
+                    id="{$options[useBulkUpload]->name}"
+                    name="{$options[useBulkUpload]->name}"
                     value="1"
-                    <?php echo (int)$view['options']['useBulkUpload']->value === 1 ? 'checked' : ''; ?>
+                    {=(int) $options][useBulkUpload]->value === 1 ? checked : ''}
                 />
             </td>
         </tr>
