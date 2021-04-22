@@ -16,6 +16,7 @@ namespace WP2StaticCloudflareWorkers;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use GuzzleHttp\Client;
+use WP2Static\CoreOptions;
 
 /**
  * Deploys to Cloudflare Workers
@@ -25,7 +26,7 @@ class Deployer
 
     public function uploadFiles( string $processedSitePath ): void
     {
-        if (Controller::getValue('useBulkUpload')) {
+        if (Controller::getValue('useBulkUpload') === '1') {
             $this->bulkUploadFiles($processedSitePath);
             return;
         }
@@ -42,12 +43,13 @@ class Deployer
 
         $accountID = Controller::getValue('accountID');
         $namespaceID = Controller::getValue('namespaceID');
-        $apiToken = \WP2Static\CoreOptions::encrypt_decrypt(
+        $apiToken = CoreOptions::encrypt_decrypt(
             'decrypt',
             Controller::getValue('apiToken')
         );
 
-        if (! $accountID || ! $namespaceID || ! $apiToken) {
+        // TODO: check decrypted apiToken can ever actually be empty string
+        if ($accountID === '' || $namespaceID === '' || $apiToken === '') {
             $err = 'Unable to connect to Cloudflare API without ' .
             'API Token, Account ID & Namespace ID set';
             \WP2Static\WsLog::l($err);
@@ -175,7 +177,7 @@ class Deployer
 
         $accountID = Controller::getValue('accountID');
         $namespaceID = Controller::getValue('namespaceID');
-        $apiToken = \WP2Static\CoreOptions::encrypt_decrypt(
+        $apiToken = CoreOptions::encrypt_decrypt(
             'decrypt',
             Controller::getValue('apiToken')
         );

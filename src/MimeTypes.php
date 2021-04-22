@@ -1034,10 +1034,10 @@ class MimeTypes
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
 
-        if ($finfo) {
+        if (is_resource($finfo)) {
             $mimeType = finfo_file($finfo, $filename);
 
-            if ($mimeType) {
+            if (is_string($mimeType)) {
                 return $mimeType;
             }
         }
