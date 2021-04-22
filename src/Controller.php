@@ -19,7 +19,7 @@ namespace WP2StaticCloudflareWorkers;
  */
 class Controller
 {
-    public function run(): void
+    public function __construct(): void
     {
         add_filter(
             'wp2static_add_menu_items',
@@ -54,15 +54,6 @@ class Controller
             'Cloudflare Workers Deployment',
             'https://wp2static.com/addons/cloudflare-workers/',
             'Deploys to Cloudflare Workers'
-        );
-
-        if (!defined('WP_CLI')) {
-            return;
-        }
-
-        \WP_CLI::add_command(
-            'wp2static cloudflare_workers',
-            [ 'WP2StaticCloudflareWorkers\CLI', 'cloudflareWorkers' ]
         );
     }
 
