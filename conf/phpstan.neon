@@ -5,8 +5,13 @@ parameters:
     level: max
     phpVersion: 80000
     inferPrivatePropertyTypeFromConstructor: true
+    bootstrapFiles:
+        - ../tests/phpstan/constants.php
     scanFiles:
       - ../vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php
     paths:
         - ../wp2static-addon-cloudflare-workers.php
         - ../src/
+    ignoreErrors:
+        # WP-CLI accepts a class as callable
+        # - '/^Parameter #2 \$callable of static method WP_CLI::add_command\(\) expects callable\(\): mixed, \S+ given\.$/'

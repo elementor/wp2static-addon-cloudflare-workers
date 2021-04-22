@@ -50,11 +50,7 @@ class Requirements
 
     public function wp(string $minVersion): self
     {
-        // Makes $wp_version available locally.
-        require \ABSPATH . \WPINC . '/version.php';
-
-        /** @var string $wp_version */
-        $this->met = $this->met && version_compare($wp_version, $minVersion, '>='); // phpcs:ignore
+        $this->met = $this->met && version_compare(get_bloginfo('version'), $minVersion, '>=');
 
         return $this;
     }
