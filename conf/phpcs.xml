@@ -1,12 +1,9 @@
 <?xml version="1.0"?>
-<ruleset name="WhatWouldViktorDoCodingStyle">
+<ruleset name="WP2StaticCodingStyle">
     <description>Inspired by @szepeviktor's ruleset.</description>
 
     <!-- Define targets for inspection  -->
-    <file>src</file>
-
-    <!-- Requires 4.0 branch of phpcs & now only working via CLI -->
-    <file>bin/whatwouldviktordo</file>
+    <file>./src</file>
 
     <!-- Exclude Composer vendor packages -->
     <exclude-pattern>./vendor/</exclude-pattern>
@@ -26,6 +23,6 @@
 
     <!-- Pest test cases have $this magically set -->
     <rule ref="PHPCompatibility.FunctionDeclarations.NewClosure">
-        <exclude-pattern>/tests/Unit/*\.php</exclude-pattern>
+        <exclude-pattern>./tests/Unit/*\.php</exclude-pattern>
     </rule>
 </ruleset>
