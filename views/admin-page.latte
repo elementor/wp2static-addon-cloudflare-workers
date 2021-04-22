@@ -1,25 +1,3 @@
-<?php
-
-/**
- * Cloudflare Workers View
- *
- * PHP Version 7.4
- *
- * @category WordPress_Plugin
- * @package  WP2StaticCloudflareWorkers
- * @author   Leon Stafford <me@ljs.dev>
- * @license  The Unlicense
- * @link     https://unlicense.org
- */
-
-declare(strict_types=1);
-
-/**
- * Specify type of received $view var
- *
- * @var array $view
- */
-?>
 <h2>Cloudflare Workers Deployment Options</h2>
 
 <form
@@ -28,6 +6,13 @@ declare(strict_types=1);
     action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
 
     <?php wp_nonce_field($view['nonce_action']); ?>
+
+    <input
+      type="hidden"
+      id="wp2static-cloudflare-workers-options"
+      name="wp2static-cloudflare-workers-options"
+      value="{$nonce_action}" />
+
     <input
         name="action"
         type="hidden"
@@ -38,32 +23,32 @@ declare(strict_types=1);
 
         <tr>
             <td style="width:50%;">
-                <label
-                    for="<?php echo $view['options']['accountID']->name; ?>"
-                ><?php echo $view['options']['accountID']->label; ?></label>
+                <label for="{$options[accountID]->name}">
+                  {$options[accountID]->label}
+                </label>
             </td>
             <td>
                 <input
-                    id="<?php echo $view['options']['accountID']->name; ?>"
-                    name="<?php echo $view['options']['accountID']->name; ?>"
+                    id="{$options[accountID]->name}"
+                    name="{$options[accountID]->name}"
                     type="text"
-                    value="<?php echo $view['options']['accountID']->value !== '' ? $view['options']['accountID']->value : ''; ?>"
+                    value="{$options[accountID]->value}"
                 />
             </td>
         </tr>
 
         <tr>
             <td style="width:50%;">
-                <label
-                    for="<?php echo $view['options']['namespaceID']->name; ?>"
-                ><?php echo $view['options']['namespaceID']->label; ?></label>
+                <label for="{$options[namespaceID]->name}">
+                  {$options[namespaceID]->label}
+                </label>
             </td>
             <td>
                 <input
-                    id="<?php echo $view['options']['namespaceID']->name; ?>"
-                    name="<?php echo $view['options']['namespaceID']->name; ?>"
+                    id="{$options[namespaceID]->name}"
+                    name="{$options[namespaceID]->name}"
                     type="text"
-                    value="<?php echo $view['options']['namespaceID']->value !== '' ? $view['options']['namespaceID']->value : ''; ?>"
+                    value="{$options[namespaceID]->value}"
                 />
             </td>
         </tr>

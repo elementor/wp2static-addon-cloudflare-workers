@@ -165,20 +165,21 @@ class Controller
         self::createOptionsTable();
         self::seedOptions();
 
-        $templateLoader = new FileSystemLoader(__DIR__ . '/../views/');
+        $latte = new Latte\Engine();
+        $latte->setTempDirectory(WP2STATIC_CLOUDFLARE_WORKERS_PATH . 'views');
 
-        $twig =  new Twig\Environment($this->loader);
-        echo $twig->render(
-            'admin-page.html.twig',
-            [
-                'nonce_action' => 'wp2static-cloudflare-workers-options',
+        $cloudflareWorkersPath =
+            \WP2Static\SiteInfo::getPath('uploads') . 'wp2static-processed-site';
+
+        $parameters = [
+                'nonce_action' => wp_create_nonce('wp2static-cloudflare-workers-options'),
                 'uploads_path' => \WP2Static\SiteInfo::getPath('uploads'),
                 'options' => self::getOptions(),
                 'cloudflare_workers_url' => is_file($cloudflareWorkersPath) ?
                     \WP2Static\SiteInfo::getUrl('uploads') . 'wp2static-processed-site.cf' : '#',
-            ]
-        );
+        ];
 
+        $latte->render('admin-page.latte', $parameters);
     }
 
     public function deploy( string $processedSitePath ): void
