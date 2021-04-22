@@ -188,7 +188,7 @@ class Controller
         $cloudflareWorkersDeployer->upload_files($processedSitePath);
     }
 
-    public static function activateForSingleSite() : void
+    public static function activateForSingleSite(): void
     {
         self::createOptionsTable();
         self::seedOptions();
@@ -215,13 +215,17 @@ class Controller
         dbDelta($sql);
 
         // dbDelta doesn't handle unique indexes well.
-        $indexes = $wpdb->query( "SHOW INDEX FROM $tableName WHERE key_name = 'name'" );
-        if ( 0 === $indexes ) {
-            $result = $wpdb->query( "CREATE UNIQUE INDEX name ON $tableName (name)" );
-            if ( false === $result ) {
-                \WP2Static\WsLog::l( "Failed to create 'name' index on $tableName." );
-            }
+        $indexes = $wpdb->query($wpdb->prepare('SHOW INDEX FROM %s WHERE key_name = \'name\'', $tableName));
+        if ($indexes !== 0) {
+            return;
         }
+
+        $result = $wpdb->query($wpdb->prepare('CREATE UNIQUE INDEX name ON %s (name)', $tableName));
+        if ($result !== false) {
+            return;
+        }
+
+        \WP2Static\WsLog::l("Failed to create 'name' index on $tableName.");
     }
 
     public static function deactivateForSingleSite(): void

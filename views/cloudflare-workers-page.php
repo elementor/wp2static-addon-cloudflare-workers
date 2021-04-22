@@ -3,9 +3,13 @@
 <form
     name="wp2static-cloudflare-workers-save-options"
     method="POST"
-    action="<?php echo esc_url( admin_url('admin-post.php') ); ?>">
+    action="<?php
 
-    <?php wp_nonce_field( $view['nonce_action'] ); ?>
+    declare(strict_types=1);
+
+    echo esc_url(admin_url('admin-post.php')); ?>">
+
+    <?php wp_nonce_field($view['nonce_action']); ?>
     <input name="action" type="hidden" value="wp2static_cloudflare_workers_save_options" />
 
 <table class="widefat striped">
@@ -54,9 +58,13 @@
                     id="<?php echo $view['options']['apiToken']->name; ?>"
                     name="<?php echo $view['options']['apiToken']->name; ?>"
                     type="password"
-                    value="<?php echo $view['options']['apiToken']->value !== '' ?
+                    value="
+                    <?php
+                    echo $view['options']['apiToken']->value !== '' ?
                         \WP2Static\CoreOptions::encrypt_decrypt('decrypt', $view['options']['apiToken']->value) :
-                        ''; ?>"
+                        '';
+                    ?>
+                        "
                 />
             </td>
         </tr>
@@ -73,7 +81,7 @@
                     id="<?php echo $view['options']['useBulkUpload']->name; ?>"
                     name="<?php echo $view['options']['useBulkUpload']->name; ?>"
                     value="1"
-                    <?php echo (int) $view['options']['useBulkUpload']->value === 1 ? 'checked' : ''; ?>
+                    <?php echo (int)$view['options']['useBulkUpload']->value === 1 ? 'checked' : ''; ?>
                 />
             </td>
         </tr>
