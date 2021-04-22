@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cb4d979b41c5503158790226579a2593",
+    "content-hash": "59ac97c80a70e4d7e0b2575164cac476",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -3922,12 +3922,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "342dbf2481b7a3c0b799fecd7b7c4def3c0408e3"
+                "reference": "ae4f33bc1ba3c779681275a506c44f8dff378c28"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/342dbf2481b7a3c0b799fecd7b7c4def3c0408e3",
-                "reference": "342dbf2481b7a3c0b799fecd7b7c4def3c0408e3",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/ae4f33bc1ba3c779681275a506c44f8dff378c28",
+                "reference": "ae4f33bc1ba3c779681275a506c44f8dff378c28",
                 "shasum": ""
             },
             "require": {
@@ -3971,7 +3971,7 @@
                 "source": "https://github.com/squizlabs/PHP_CodeSniffer",
                 "wiki": "https://github.com/squizlabs/PHP_CodeSniffer/wiki"
             },
-            "time": "2021-04-16T04:22:12+00:00"
+            "time": "2021-04-21T23:33:45+00:00"
         },
         {
             "name": "symfony/console",
