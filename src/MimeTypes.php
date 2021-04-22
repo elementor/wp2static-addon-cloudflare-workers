@@ -1,14 +1,27 @@
 <?php
 
+/**
+ * MimeTypes.php
+ *
+ * @package           WP2StaticCloudflareWorkers
+ * @author            Leon Stafford <me@ljs.dev>
+ * @license           The Unlicense
+ * @link              https://unlicense.org
+ */
+
 declare(strict_types=1);
 
 namespace WP2StaticCloudflareWorkers;
 
+/**
+ * CloudflareWorkers MimeTypes
+ *
+ */
 class MimeTypes
 {
     /*
      * Takes a filename and returns its mimetype.
-     * GuessMimeTypes first looks at the file extension and looks it up
+     * guessMimeTypes first looks at the file extension and looks it up
      * in an array of known mimetypes. If that lookup misses, it uses
      * finfo to guess the mimetype based on magic bytes. If that also fails,
      * "application/octet-stream" is returned.
@@ -16,9 +29,10 @@ class MimeTypes
      * @param string $filename filename
      * @return string mimetype
      */
-    public static function GuessMimeType( string $filename ): string
+    // phpcs:ignore NeutronStandard.Functions.LongFunction.LongFunction
+    public static function guessMimeType( string $filename ): string
     {
-        static $mime_types = [
+        static $mimeTypes = [
             '123' => 'application/vnd.lotus-1-2-3',
             '3dml' => 'text/vnd.in3d.3dml',
             '3ds' => 'image/x-3ds',
@@ -1014,17 +1028,17 @@ class MimeTypes
 
         $info = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-        if (array_key_exists($info, $mime_types)) {
-            return $mime_types[$info];
+        if (array_key_exists($info, $mimeTypes)) {
+            return $mimeTypes[$info];
         }
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
 
         if ($finfo) {
-            $mime_type = finfo_file($finfo, $filename);
+            $mimeType = finfo_file($finfo, $filename);
 
-            if ($mime_type) {
-                return $mime_type;
+            if ($mimeType) {
+                return $mimeType;
             }
         }
 
