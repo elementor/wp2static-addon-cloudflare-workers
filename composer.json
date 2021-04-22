@@ -1,5 +1,5 @@
 {
-    "name": "wp2static/wp2static-addon-cloudflare-workers",
+    "name": "leonstafford/wp2static-addon-cloudflare-workers",
     "description": "Cloudflare Workers deployment Add-on for WP2Static.",
     "homepage": "https://wp2static.com",
       "license": "UNLICENSE",
@@ -12,10 +12,10 @@
       ],
     "type": "wordpress-plugin",
     "support": {
-        "issues": "https://github.com/WP2Static/wp2static-addon-cloudflare-workers/issues",
-        "forum": "https://wp2static.com/community",
+        "issues": "https://github.com/leonstafford/wp2static-addon-cloudflare-workers/issues",
+        "forum": "https://staticword.press",
         "docs": "https://wp2static.com/documentation",
-        "source": "https://github.com/WP2Static/wp2static-addon-cloudflare-workers"
+        "source": "https://github.com/leonstafford/wp2static-addon-cloudflare-workers"
     },
     "require": {
         "php": "^7.4 || ^8.0",
