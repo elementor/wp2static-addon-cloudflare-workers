@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Auditor.php
+ * Deployer.php
  *
  * @package           WP2StaticCloudflareWorkers
  * @author            Leon Stafford <me@ljs.dev>
@@ -33,6 +33,7 @@ class Deployer
         $this->singularUploadFiles($processedSitePath);
     }
 
+    // phpcs:ignore NeutronStandard.Functions.LongFunction.LongFunction
     public function singularUploadFiles( string $processedSitePath ): void
     {
         if (! is_dir($processedSitePath)) {
@@ -41,12 +42,12 @@ class Deployer
 
         $accountID = Controller::getValue('accountID');
         $namespaceID = Controller::getValue('namespaceID');
-        $APIToken = \WP2Static\CoreOptions::encrypt_decrypt(
+        $apiToken = \WP2Static\CoreOptions::encrypt_decrypt(
             'decrypt',
             Controller::getValue('apiToken')
         );
 
-        if (! $accountID || ! $namespaceID || ! $APIToken) {
+        if (! $accountID || ! $namespaceID || ! $apiToken) {
             $err = 'Unable to connect to Cloudflare API without ' .
             'API Token, Account ID & Namespace ID set';
             \WP2Static\WsLog::l($err);
@@ -60,7 +61,7 @@ class Deployer
         $client = new Client([ 'base_uri' => 'https://api.cloudflare.com/client/v4/' ]);
 
         $headers = [
-            'Authorization' => 'Bearer ' . $APIToken,
+            'Authorization' => 'Bearer ' . $apiToken,
         ];
 
         // iterate each file in ProcessedSite
@@ -165,6 +166,7 @@ class Deployer
         do_action('wp2static_cloudflare_workers_deployment_complete', $args);
     }
 
+    // phpcs:ignore NeutronStandard.Functions.LongFunction.LongFunction
     public function bulkUploadFiles( string $processedSitePath ): void
     {
         if (! is_dir($processedSitePath)) {
@@ -173,12 +175,12 @@ class Deployer
 
         $accountID = Controller::getValue('accountID');
         $namespaceID = Controller::getValue('namespaceID');
-        $APIToken = \WP2Static\CoreOptions::encrypt_decrypt(
+        $apiToken = \WP2Static\CoreOptions::encrypt_decrypt(
             'decrypt',
             Controller::getValue('apiToken')
         );
 
-        if (! $accountID || ! $namespaceID || ! $APIToken) {
+        if (! $accountID || ! $namespaceID || ! $apiToken) {
             $err = 'Unable to connect to Cloudflare API without ' .
             'API Token, Account ID & Namespace ID set';
             \WP2Static\WsLog::l($err);
@@ -192,7 +194,7 @@ class Deployer
         $client = new Client([ 'base_uri' => 'https://api.cloudflare.com/client/v4/' ]);
 
         $headers = [
-            'Authorization' => 'Bearer ' . $APIToken,
+            'Authorization' => 'Bearer ' . $apiToken,
             'Content-Type' => 'application/json',
         ];
 

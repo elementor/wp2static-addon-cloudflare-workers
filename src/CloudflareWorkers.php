@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * CloudflareWorkers.php
+ *
+ * @package           WP2StaticCloudflareWorkers
+ * @author            Leon Stafford <me@ljs.dev>
+ * @license           The Unlicense
+ * @link              https://unlicense.org
+ */
+
 declare(strict_types=1);
 
 namespace WP2StaticCloudflareWorkers;
@@ -7,52 +16,52 @@ namespace WP2StaticCloudflareWorkers;
 use GuzzleHttp\Client;
 
 /**
- * CloudflareWorkers
+ * CloudflareWorkers Client Functions
  *
- * @property string $account_id Account ID
- * @property string $namespace_id Namespace ID
- * @property string $api_token API Token
+ * @property string $accountID Account ID
+ * @property string $namespaceID Namespace ID
+ * @property string $apiToken API Token
  * @property \WP2StaticCloudflareWorkers\GuzzleHttp\Client $client Guzzle Client
  * @property array $headers Client headers
- * @property array $key_names List of key names
+ * @property array $keyNames List of key names
  */
 class CloudflareWorkers
 {
 
-    public $account_id;
-    public $namespace_id;
-    public $api_token;
+    public $accountID;
+    public $namespaceID;
+    public $apiToken;
     public $client;
     public $headers;
-    public $key_names;
+    public $keyNames;
 
-    const MAX_KEYS_DELETE = 10000;
+    public const MAX_KEYS_DELETE = 10000;
 
     public function __construct()
     {
-        $this->account_id = Controller::getValue('accountID');
-        $this->namespace_id = Controller::getValue('namespaceID');
-        $this->api_token = \WP2Static\CoreOptions::encrypt_decrypt(
+        $this->accountID = Controller::getValue('accountID');
+        $this->namespaceID = Controller::getValue('namespaceID');
+        $this->apiToken = \WP2Static\CoreOptions::encrypt_decrypt(
             'decrypt',
             Controller::getValue('apiToken')
         );
 
-        if (! $this->account_id || ! $this->namespace_id || ! $this->api_token) {
+        if (! $this->accountID || ! $this->namespaceID || ! $this->apiToken) {
             $err = 'Unable to connect to Cloudflare API without ' .
             'API Token, Account ID & Namespace ID set';
             \WP2Static\WsLog::l($err);
         }
 
         $this->client = new Client([ 'base_uri' => 'https://api.cloudflare.com/client/v4/' ]);
-        $this->headers = [ 'Authorization' => 'Bearer ' . $this->api_token ];
-        $this->key_names = [];
+        $this->headers = [ 'Authorization' => 'Bearer ' . $this->apiToken ];
+        $this->keyNames = [];
     }
 
-    public function get_page_of_keys( string $cursor ): void
+    public function getPageOfKeys( string $cursor ): void
     {
         $res = $this->client->request(
             'GET',
-            "accounts/$this->account_id/storage/kv/namespaces/$this->namespace_id/keys",
+            "accounts/$this->accountID/storage/kv/namespaces/$this->namespaceID/keys",
             [
                 'headers' => $this->headers,
                 'query' => [
@@ -85,16 +94,17 @@ class CloudflareWorkers
         }
 
         foreach ($result->result as $key) {
-            $this->key_names[] = $key->name;
+            $this->keyNames[] = $key->name;
         }
 
+        // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         $cursor = $result->result_info->cursor;
 
         if ($cursor === '') {
             return;
         }
 
-        $this->get_page_of_keys($cursor);
+        $this->getPageOfKeys($cursor);
     }
 
     /**
@@ -102,48 +112,48 @@ class CloudflareWorkers
      *
      * @return array<string> Array of strings
      */
-    public function list_keys(): array
+    public function listKeys(): array
     {
         \WP2Static\WsLog::l('Starting to retrieving list of KV keys');
-        $this->get_page_of_keys('');
+        $this->getPageOfKeys('');
 
         \WP2Static\WsLog::l('Completed retrieving list of KV keys');
-        return $this->key_names;
+        return $this->keyNames;
     }
 
-    public function delete_keys(): bool
+    public function deleteKeys(): bool
     {
         \WP2Static\WsLog::l('Starting to delete all KV keys in namespace');
-        $this->get_page_of_keys('');
+        $this->getPageOfKeys('');
 
-        $total_keys = count($this->key_names);
-        \WP2Static\WsLog::l("Attempting to delete $total_keys keys");
+        $totalKeys = count($this->keyNames);
+        \WP2Static\WsLog::l("Attempting to delete $totalKeys keys");
 
-        if (! $total_keys) {
+        if (! $totalKeys) {
             return false;
         }
 
         // Note: API allows bulk deletion up to 10,000 at a time
-        $batches = ceil($total_keys / self::MAX_KEYS_DELETE);
+        $batches = ceil($totalKeys / self::MAX_KEYS_DELETE);
 
-        for ($batch = 0; $batch < $batches; $batch++) {
+        for ($batch = 0; $batch < $batches; $batch += 1) {
             \WP2Static\WsLog::l('Deleting batch ' . ( $batch + 1 ) . " of $batches");
 
-            $keys_to_delete = array_slice(
-                $this->key_names,
+            $keysToDelete = array_slice(
+                $this->keyNames,
                 $batch * self::MAX_KEYS_DELETE,
                 self::MAX_KEYS_DELETE
             );
 
-            \WP2Static\WsLog::l(count($keys_to_delete) . ' keys in batch');
+            \WP2Static\WsLog::l(count($keysToDelete) . ' keys in batch');
 
             $res = $this->client->request(
                 'DELETE',
-                "accounts/$this->account_id/storage/kv/namespaces/" .
-                "$this->namespace_id/bulk",
+                "accounts/$this->accountID/storage/kv/namespaces/" .
+                "$this->namespaceID/bulk",
                 [
                     'headers' => $this->headers,
-                    'json' => $keys_to_delete,
+                    'json' => $keysToDelete,
                 ],
             );
 

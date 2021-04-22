@@ -1,9 +1,22 @@
 <?php
 
+/**
+ * Controller.php
+ *
+ * @package           WP2StaticCloudflareWorkers
+ * @author            Leon Stafford <me@ljs.dev>
+ * @license           The Unlicense
+ * @link              https://unlicense.org
+ */
+
 declare(strict_types=1);
 
 namespace WP2StaticCloudflareWorkers;
 
+/**
+ * CloudflareWorkers Client Functions
+ *
+ */
 class Controller
 {
     public function run(): void
@@ -63,9 +76,9 @@ class Controller
         global $wpdb;
         $options = [];
 
-        $table_name = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
+        $tableName = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
 
-        $rows = $wpdb->get_results("SELECT * FROM $table_name");
+        $rows = $wpdb->get_results($wpdb->prepare('SELECT * FROM %s', $tableName));
 
         foreach ($rows as $row) {
             $options[$row->name] = $row;
@@ -77,54 +90,56 @@ class Controller
     /**
      * Seed options
      */
+    // phpcs:ignore NeutronStandard.Functions.LongFunction.LongFunction
     public static function seedOptions(): void
     {
         global $wpdb;
 
-        $table_name = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
+        $tableName = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
 
-        $query_string =
-            "INSERT INTO $table_name (name, value, label, description) VALUES (%s, %s, %s, %s);";
-
-        $query = $wpdb->prepare(
-            $query_string,
-            'apiToken',
-            '',
-            'API Token',
-            'see https://dash.cloudflare.com/profile/api-tokens'
+        $wpdb->query(
+            $wpdb->prepare(
+                'INSERT INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
+                $tableName,
+                'apiToken',
+                '',
+                'API Token',
+                'see https://dash.cloudflare.com/profile/api-tokens'
+            )
         );
 
-        $wpdb->query($query);
-
-        $query = $wpdb->prepare(
-            $query_string,
-            'useBulkUpload',
-            '1',
-            'Bulk uploads',
-            'Uploads files in batches'
+        $wpdb->query(
+            $wpdb->prepare(
+                'INSERT INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
+                $tableName,
+                'useBulkUpload',
+                '1',
+                'Bulk uploads',
+                'Uploads files in batches'
+            )
         );
 
-        $wpdb->query($query);
-
-        $query = $wpdb->prepare(
-            $query_string,
-            'namespaceID',
-            '',
-            'Namespace ID',
-            'ie 3d61660f7f564f689b24fbb1f252c033'
+        $wpdb->query(
+            $wpdb->prepare(
+                'INSERT INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
+                $tableName,
+                'namespaceID',
+                '',
+                'Namespace ID',
+                'ie 3d61660f7f564f689b24fbb1f252c033'
+            )
         );
 
-        $wpdb->query($query);
-
-        $query = $wpdb->prepare(
-            $query_string,
-            'accountID',
-            '',
-            'Account ID',
-            'ie 13e736c51a7a73dabc0b83f75d3bedce'
+        $wpdb->query(
+            $wpdb->prepare(
+                'INSERT INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
+                $tableName,
+                'accountID',
+                '',
+                'Account ID',
+                'ie 13e736c51a7a73dabc0b83f75d3bedce'
+            )
         );
-
-        $wpdb->query($query);
     }
 
     /**
@@ -136,10 +151,10 @@ class Controller
     {
         global $wpdb;
 
-        $table_name = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
+        $tableName = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
 
         $wpdb->update(
-            $table_name,
+            $tableName,
             [ 'value' => $value ],
             [ 'name' => $name ]
         );
@@ -150,42 +165,42 @@ class Controller
         $view = [];
         $view['nonce_action'] = 'wp2static-cloudflare-workers-options';
         $view['uploads_path'] = \WP2Static\SiteInfo::getPath('uploads');
-        $cloudflare_workers_path =
+        $cloudflareWorkersPath =
             \WP2Static\SiteInfo::getPath('uploads') . 'wp2static-processed-site.s3';
 
         $view['options'] = self::getOptions();
 
         $view['cloudflare_workers_url'] =
-            is_file($cloudflare_workers_path) ?
+            is_file($cloudflareWorkersPath) ?
                 \WP2Static\SiteInfo::getUrl('uploads') . 'wp2static-processed-site.s3' : '#';
 
         require_once __DIR__ . '/../views/cloudflare-workers-page.php';
     }
 
-    public function deploy( string $processed_site_path ): void
+    public function deploy( string $processedSitePath ): void
     {
         \WP2Static\WsLog::l('Cloudflare Workers add-on deploying');
 
-        $cloudflare_workers_deployer = new Deployer();
-        $cloudflare_workers_deployer->upload_files($processed_site_path);
+        $cloudflareWorkersDeployer = new Deployer();
+        $cloudflareWorkersDeployer->upload_files($processedSitePath);
     }
 
-    public static function activate_for_single_site(): void
+    public static function activateForSingleSite(): void
     {
         global $wpdb;
 
-        $table_name = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
+        $tableName = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
 
-        $charset_collate = $wpdb->get_charset_collate();
+        $charsetCollate = $wpdb->get_charsetCollate();
 
-        $sql = "CREATE TABLE $table_name (
+        $sql = "CREATE TABLE $tableName (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             name VARCHAR(255) NOT NULL,
             value VARCHAR(255) NOT NULL,
             label VARCHAR(255) NULL,
             description VARCHAR(255) NULL,
             PRIMARY KEY  (id)
-        ) $charset_collate;";
+        ) $charsetCollate;";
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta($sql);
@@ -199,74 +214,70 @@ class Controller
         self::seedOptions();
     }
 
-    public static function deactivate_for_single_site(): void
+    public static function deactivateForSingleSite(): void
     {
     }
 
-    public static function deactivate( ?bool $network_wide = null ): void
+    public static function deactivate( ?bool $networkWide = null ): void
     {
-        if ($network_wide) {
+        if ($networkWide) {
             global $wpdb;
 
-            $query = 'SELECT blog_id FROM %s WHERE site_id = %d;';
-
-            $site_ids = $wpdb->get_col(
-                sprintf(
-                    $query,
+            $siteIDs = $wpdb->get_col(
+                $wpdb->prepare(
+                    'SELECT blog_id FROM %s WHERE siteID = %d;',
                     $wpdb->blogs,
                     $wpdb->siteid
                 )
             );
 
-            foreach ($site_ids as $site_id) {
-                switch_to_blog($site_id);
-                self::deactivate_for_single_site();
+            foreach ($siteIDs as $siteID) {
+                switch_to_blog($siteID);
+                self::deactivateForSingleSite();
             }
 
             restore_current_blog();
         } else {
-            self::deactivate_for_single_site();
+            self::deactivateForSingleSite();
         }
     }
 
-    public static function activate( ?bool $network_wide = null ): void
+    public static function activate( ?bool $networkWide = null ): void
     {
-        if ($network_wide) {
+        if ($networkWide) {
             global $wpdb;
 
-            $query = 'SELECT blog_id FROM %s WHERE site_id = %d;';
-
-            $site_ids = $wpdb->get_col(
-                sprintf(
-                    $query,
+            $siteIDs = $wpdb->get_col(
+                $wpdb->prepare(
+                    'SELECT blog_id FROM %s WHERE siteID = %d;',
                     $wpdb->blogs,
                     $wpdb->siteid
                 )
             );
 
-            foreach ($site_ids as $site_id) {
-                switch_to_blog($site_id);
-                self::activate_for_single_site();
+            foreach ($siteIDs as $siteID) {
+                switch_to_blog($siteID);
+                self::activateForSingleSite();
             }
 
             restore_current_blog();
         } else {
-            self::activate_for_single_site();
+            self::activateForSingleSite();
         }
     }
 
     /**
      * Add WP2Static submenu
      *
-     * @param array<mixed> $submenu_pages array of submenu pages
+     * @param array<mixed> $submenuPages array of submenu pages
      * @return array<mixed> array of submenu pages
      */
-    public static function addSubmenuPage( array $submenu_pages ): array
+    public static function addSubmenuPage( array $submenuPages ): array
     {
-        $submenu_pages['cloudflare-workers'] =
+        $submenuPages['cloudflare-workers'] =
             [ 'WP2StaticCloudflareWorkers\Controller', 'renderCloudflareWorkersPage' ];
 
-        return $submenu_pages;
+        return $submenuPages;
     }
 
     public static function saveOptionsFromUI(): void
@@ -275,9 +286,9 @@ class Controller
 
         global $wpdb;
 
-        $table_name = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
+        $tableName = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
 
-        $api_token =
+        $apiToken =
             $_POST['apiToken'] ?
             \WP2Static\CoreOptions::encrypt_decrypt(
                 'encrypt',
@@ -285,25 +296,25 @@ class Controller
             ) : '';
 
         $wpdb->update(
-            $table_name,
-            [ 'value' => $api_token ],
+            $tableName,
+            [ 'value' => $apiToken ],
             [ 'name' => 'apiToken' ]
         );
 
         $wpdb->update(
-            $table_name,
+            $tableName,
             [ 'value' => isset($_POST['useBulkUpload']) ? 1 : 0 ],
             [ 'name' => 'useBulkUpload' ]
         );
 
         $wpdb->update(
-            $table_name,
+            $tableName,
             [ 'value' => sanitize_text_field($_POST['namespaceID']) ],
             [ 'name' => 'namespaceID' ]
         );
 
         $wpdb->update(
-            $table_name,
+            $tableName,
             [ 'value' => sanitize_text_field($_POST['accountID']) ],
             [ 'name' => 'accountID' ]
         );
@@ -321,20 +332,19 @@ class Controller
     {
         global $wpdb;
 
-        $table_name = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
-
-        $sql = $wpdb->prepare(
-            "SELECT value FROM $table_name WHERE" . ' name = %s LIMIT 1',
-            $name
+        $optionValue = $wpdb->get_var(
+            $wpdb->prepare(
+                'SELECT value FROM %s WHERE name = %s LIMIT 1',
+                $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options',
+                $name
+            )
         );
 
-        $option_value = $wpdb->get_var($sql);
-
-        if (! is_string($option_value)) {
+        if (! is_string($optionValue)) {
             return '';
         }
 
-        return $option_value;
+        return $optionValue;
     }
 
     public function addOptionsPage(): void
