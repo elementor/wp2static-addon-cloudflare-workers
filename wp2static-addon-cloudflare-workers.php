@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Plugin Name:       WP2Static Add-on: Cloudflare Workers Deployment
  * Plugin URI:        https://wp2static.com
  * Description:       Cloudflare Workers deployment add-on for WP2Static.
- * Version:           1.0-alpha-005
+ * Version:           1.0-dev
  * Author:            Leon Stafford
  * Author URI:        https://ljs.dev
  * License:           Unlicense
@@ -19,7 +19,7 @@ if (! defined('WPINC')) {
 }
 
 define('WP2STATIC_CLOUDFLARE_WORKERS_PATH', plugin_dir_path(__FILE__));
-define('WP2STATIC_CLOUDFLARE_WORKERS_VERSION', '1.0-alpha-005');
+define('WP2STATIC_CLOUDFLARE_WORKERS_VERSION', '1.0-dev');
 
 if (
     file_exists(WP2STATIC_CLOUDFLARE_WORKERS_PATH . 'vendor/autoload.php')

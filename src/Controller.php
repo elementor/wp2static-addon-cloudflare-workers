@@ -99,7 +99,7 @@ class Controller
 
         $wpdb->query(
             $wpdb->prepare(
-                'INSERT INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
+                'INSERT IGNORE INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
                 $tableName,
                 'apiToken',
                 '',
@@ -110,7 +110,7 @@ class Controller
 
         $wpdb->query(
             $wpdb->prepare(
-                'INSERT INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
+                'INSERT IGNORE INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
                 $tableName,
                 'useBulkUpload',
                 '1',
@@ -121,7 +121,7 @@ class Controller
 
         $wpdb->query(
             $wpdb->prepare(
-                'INSERT INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
+                'INSERT IGNORE INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
                 $tableName,
                 'namespaceID',
                 '',
@@ -132,7 +132,7 @@ class Controller
 
         $wpdb->query(
             $wpdb->prepare(
-                'INSERT INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
+                'INSERT IGNORE INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
                 $tableName,
                 'accountID',
                 '',
@@ -162,17 +162,20 @@ class Controller
 
     public static function renderCloudflareWorkersPage(): void
     {
+        self::createOptionsTable();
+        self::seedOptions();
+
         $view = [];
         $view['nonce_action'] = 'wp2static-cloudflare-workers-options';
         $view['uploads_path'] = \WP2Static\SiteInfo::getPath('uploads');
         $cloudflareWorkersPath =
-            \WP2Static\SiteInfo::getPath('uploads') . 'wp2static-processed-site.s3';
+            \WP2Static\SiteInfo::getPath('uploads') . 'wp2static-processed-site';
 
         $view['options'] = self::getOptions();
 
         $view['cloudflare_workers_url'] =
             is_file($cloudflareWorkersPath) ?
-                \WP2Static\SiteInfo::getUrl('uploads') . 'wp2static-processed-site.s3' : '#';
+                \WP2Static\SiteInfo::getUrl('uploads') . 'wp2static-processed-site.cf' : '#';
 
         require_once __DIR__ . '/../views/cloudflare-workers-page.php';
     }
@@ -185,7 +188,13 @@ class Controller
         $cloudflareWorkersDeployer->upload_files($processedSitePath);
     }
 
-    public static function activateForSingleSite(): void
+    public static function activateForSingleSite() : void
+    {
+        self::createOptionsTable();
+        self::seedOptions();
+    }
+
+    public static function createOptionsTable(): void
     {
         global $wpdb;
 
@@ -195,7 +204,7 @@ class Controller
 
         $sql = "CREATE TABLE $tableName (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
-            name VARCHAR(255) NOT NULL,
+            name VARCHAR(191) NOT NULL,
             value VARCHAR(255) NOT NULL,
             label VARCHAR(255) NULL,
             description VARCHAR(255) NULL,
@@ -205,13 +214,14 @@ class Controller
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta($sql);
 
-        $options = self::getOptions();
-
-        if (isset($options['namespaceID'])) {
-            return;
+        // dbDelta doesn't handle unique indexes well.
+        $indexes = $wpdb->query( "SHOW INDEX FROM $tableName WHERE key_name = 'name'" );
+        if ( 0 === $indexes ) {
+            $result = $wpdb->query( "CREATE UNIQUE INDEX name ON $tableName (name)" );
+            if ( false === $result ) {
+                \WP2Static\WsLog::l( "Failed to create 'name' index on $tableName." );
+            }
         }
-
-        self::seedOptions();
     }
 
     public static function deactivateForSingleSite(): void
