@@ -8,7 +8,7 @@
     <!-- Exclude Composer vendor packages -->
     <exclude-pattern>./vendor/</exclude-pattern>
     <exclude-pattern>./tests/unit/bootstrap.php</exclude-pattern>
-    <exclude-pattern>./tests/phpstan/bootstrap.php</exclude-pattern>
+    <exclude-pattern>./tests/phpstan/</exclude-pattern>
 
     <rule ref="PSR12NeutronRuleset">
         <!-- NeutronStandard bug -->
