@@ -32,7 +32,7 @@ class CLI
      * @param array<string> $assocArgs CLI args
      */
     // phpcs:ignore NeutronStandard.Functions.LongFunction.LongFunction
-    public function cloudflareWorkers(
+    public static function cloudflareWorkers(
         array $args,
         array $assocArgs
     ): void {
@@ -126,7 +126,7 @@ class CLI
 
             if ($arg === 'delete') {
                 if (! isset($assocArgs['force'])) {
-                    $this->multilinePrint(
+                    self::multilinePrint(
                         "no --force given. Please type 'yes' to confirm
                         deletion of all keys in namespace"
                     );
@@ -160,7 +160,7 @@ class CLI
     /**
      * Print multilines of input text via WP-CLI
      */
-    public function multilinePrint( string $string ): void
+    public static function multilinePrint( string $string ): void
     {
         $msg = trim(str_replace([ "\r", "\n" ], '', $string));
 
