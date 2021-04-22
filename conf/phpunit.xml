@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
-    bootstrap="../tests/Unit/bootstrap.php"
+    bootstrap="../tests/unit/bootstrap.php"
 >
   <testsuites>
     <testsuite name="Unit Tests">
-      <directory suffix=".php">../tests/Unit</directory>
+      <directory suffix=".php">../tests/unit</directory>
     </testsuite>
   </testsuites>
   <coverage processUncoveredFiles="true">
