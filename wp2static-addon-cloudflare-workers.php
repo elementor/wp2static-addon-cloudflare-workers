@@ -21,6 +21,8 @@
 
 declare(strict_types=1);
 
+namespace WP2StaticCloudflareWorkers;
+
 if (! defined('ABSPATH')) {
     die;
 }
