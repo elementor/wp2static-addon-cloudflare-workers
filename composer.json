@@ -47,11 +47,11 @@
         "classmap-authoritative": true
     },
     "scripts": {
-        "phpstan": "php -d memory_limit=-1 ./vendor/bin/phpstan analyse",
+      "phpstan": "php -d memory_limit=-1 ./vendor/bin/phpstan --configuration conf/phpstan.neon analyse",
         "phpcbf": "vendor/bin/phpcbf --standard=conf/phpcs.xml .",
         "phpcs":  "vendor/bin/phpcs -s --standard=conf/phpcs.xml .",
-        "pest": "vendor/bin/pest",
-        "coverage": "vendor/bin/pest --coverage",
+        "pest": "vendor/bin/pest -c conf/phpunit.xml",
+        "coverage": "vendor/bin/pest -c conf/phpunit.xml --coverage",
         "lint": "vendor/bin/parallel-lint --exclude vendor .",
         "test": [
            "composer validate --strict",
