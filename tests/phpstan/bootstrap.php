@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 // We use core constants instead of core functions
-define( 'WPINC', '' );
-define( 'WP_CONTENT_DIR', '' );
-define( 'WP_PLUGIN_DIR', '' );
+define('WPINC', '');
+define('WP_CONTENT_DIR', '');
+define('WP_PLUGIN_DIR', '');
 
 // WP2Static constants
-define( 'WP2STATIC_S3_VERSION', '' );
+define('WP2STATIC_S3_VERSION', '');
