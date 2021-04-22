@@ -17,23 +17,18 @@ use GuzzleHttp\Client;
 
 /**
  * CloudflareWorkers Client Functions
- *
- * @property string $accountID Account ID
- * @property string $namespaceID Namespace ID
- * @property string $apiToken API Token
- * @property \WP2StaticCloudflareWorkers\GuzzleHttp\Client $client Guzzle Client
- * @property array $headers Client headers
- * @property array $keyNames List of key names
  */
 class CloudflareWorkers
 {
 
-    public $accountID;
-    public $namespaceID;
-    public $apiToken;
-    public $client;
-    public $headers;
-    public $keyNames;
+    public string $accountID;
+    public string $namespaceID;
+    public string $apiToken;
+    public Client $client;
+    /** @var string[] $headers Client headers */
+    public array $headers;
+    /** @var string[] $keyNames List of key names */
+    public array $keyNames;
 
     public const MAX_KEYS_DELETE = 10000;
 
@@ -46,7 +41,7 @@ class CloudflareWorkers
             Controller::getValue('apiToken')
         );
 
-        if (! $this->accountID || ! $this->namespaceID || ! $this->apiToken) {
+        if ($this->accountID === '' || $this->namespaceID === '' || $this->apiToken === '') {
             $err = 'Unable to connect to Cloudflare API without ' .
             'API Token, Account ID & Namespace ID set';
             \WP2Static\WsLog::l($err);
@@ -74,7 +69,7 @@ class CloudflareWorkers
 
         $result = json_decode((string)$res->getBody());
 
-        if (!$result) {
+        if ($result === null) {
             return;
         }
 
@@ -129,7 +124,7 @@ class CloudflareWorkers
         $totalKeys = count($this->keyNames);
         \WP2Static\WsLog::l("Attempting to delete $totalKeys keys");
 
-        if (! $totalKeys) {
+        if ($totalKeys < 1) {
             return false;
         }
 

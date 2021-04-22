@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace WP2StaticCloudflareWorkers;
 
+use Latte;
+
 /**
  * CloudflareWorkers Client Functions
  *
@@ -157,7 +159,7 @@ class Controller
         self::seedOptions();
 
         $latte = new Latte\Engine();
-        $latte->setTempDirectory(WP2STATIC_CLOUDFLARE_WORKERS_PATH . 'views');
+        $latte->setTempDirectory(Config::get('filePath') . 'views');
 
         $cloudflareWorkersPath =
             \WP2Static\SiteInfo::getPath('uploads') . 'wp2static-processed-site';
@@ -183,7 +185,7 @@ class Controller
         \WP2Static\WsLog::l('Cloudflare Workers add-on deploying');
 
         $cloudflareWorkersDeployer = new Deployer();
-        $cloudflareWorkersDeployer->upload_files($processedSitePath);
+        $cloudflareWorkersDeployer->uploadFiles($processedSitePath);
     }
 
     public static function activateForSingleSite(): void
@@ -232,7 +234,7 @@ class Controller
 
     public static function deactivate( ?bool $networkWide = null ): void
     {
-        if ($networkWide) {
+        if ($networkWide === true) {
             global $wpdb;
 
             $siteIDs = $wpdb->get_col(
@@ -256,7 +258,7 @@ class Controller
 
     public static function activate( ?bool $networkWide = null ): void
     {
-        if ($networkWide) {
+        if ($networkWide === true) {
             global $wpdb;
 
             $siteIDs = $wpdb->get_col(
