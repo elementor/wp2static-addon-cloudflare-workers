@@ -64,7 +64,7 @@ if (Config::get('version') !== null) {
 // Define constant values.
 Config::init(
     [
-        'version' => '0.0.1',
+        'version' => '1.0.0-dev',
         'filePath' => __FILE__,
         'baseName' => plugin_basename(__FILE__),
         'slug' => 'wp2static-addon-cloudflare-workers',

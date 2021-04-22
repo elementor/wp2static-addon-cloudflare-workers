@@ -48,7 +48,7 @@
         "classmap-authoritative": true
     },
     "scripts": {
-      "phpstan": "php -d memory_limit=-1 ./vendor/bin/phpstan --configuration conf/phpstan.neon analyse",
+      "phpstan": "php -d memory_limit=-1 ./vendor/bin/phpstan --configuration=conf/phpstan.neon analyse",
         "phpcbf": "php -d memory_limit=-1 vendor/bin/phpcbf --standard=conf/phpcs.xml .",
         "phpcs":  "php -d memory_limit=-1 vendor/bin/phpcs -s --standard=conf/phpcs.xml .",
         "pest": "vendor/bin/pest -c conf/phpunit.xml",
