@@ -85,7 +85,7 @@ class Deployer
                 continue;
             }
 
-            if (! $realFilepath) {
+            if (! is_string($realFilepath)) {
                 $err = 'Trying to deploy unknown file: ' . $filename;
                 \WP2Static\WsLog::l($err);
                 continue;
@@ -103,7 +103,7 @@ class Deployer
             // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode
             $key = urlencode($key);
 
-            $mimeType = MimeTypes::GuessMimeType($filename);
+            $mimeType = MimeTypes::guessMimeType($filename);
 
             // TODO: try / catch before recording as success/adding to DeployCache
 
@@ -129,7 +129,7 @@ class Deployer
 
             $result = json_decode((string)$res->getBody());
 
-            if (!$result) {
+            if ($result === null) {
                 continue;
             }
 
@@ -177,7 +177,8 @@ class Deployer
             Controller::getValue('apiToken')
         );
 
-        if (! $accountID || ! $namespaceID || ! $apiToken) {
+        // TODO: check decrypted apiToken can ever actually be empty string
+        if ($accountID === '' || $namespaceID === '' || $apiToken === '') {
             $err = 'Unable to connect to Cloudflare API without ' .
             'API Token, Account ID & Namespace ID set';
             \WP2Static\WsLog::l($err);
@@ -232,7 +233,7 @@ class Deployer
                 continue;
             }
 
-            if (! $realFilepath) {
+            if (! is_string($realFilepath)) {
                 $err = 'Trying to deploy unknown file: ' . $filename;
                 \WP2Static\WsLog::l($err);
                 continue;
@@ -246,7 +247,7 @@ class Deployer
             }
 
             $key = str_replace('/index.html', '/', $key);
-            $mimeType = MimeTypes::GuessMimeType($filename);
+            $mimeType = MimeTypes::guessMimeType($filename);
 
             $putObject = new \stdClass();
             $putObject->kvKey = $key;
@@ -300,7 +301,7 @@ class Deployer
                 if ($e->hasResponse()) {
                     $response = $e->getResponse();
 
-                    if ($response) {
+                    if ($response !== null) {
                         \WP2Static\WsLog::l(
                             'Error response from Cloudflare API: ' .
                             $response->getStatusCode() . ' ' .
@@ -317,7 +318,7 @@ class Deployer
 
             $result = json_decode((string)$res->getBody());
 
-            if (!$result) {
+            if ($result === null) {
                 continue;
             }
 
