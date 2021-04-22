@@ -34,7 +34,8 @@
         "phpstan/phpstan-strict-rules": "*",
         "squizlabs/php_codesniffer": "dev-master",
         "szepeviktor/phpstan-wordpress": "*",
-        "szepeviktor/phpcs-psr-12-neutron-hybrid-ruleset": "*"
+        "szepeviktor/phpcs-psr-12-neutron-hybrid-ruleset": "*",
+        "php-stubs/wp-cli-stubs": "^2.4"
     },
     "autoload": {
         "psr-4": {
