@@ -40,7 +40,10 @@
     "autoload": {
         "psr-4": {
             "WP2StaticCloudflareWorkers\\": "src/"
-        }
+        },
+        "files": [
+          "src/functions.php"
+        ]
     },
     "config": {
         "preferred-install": {

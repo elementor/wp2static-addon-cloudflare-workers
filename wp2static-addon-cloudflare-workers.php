@@ -23,6 +23,16 @@ declare(strict_types=1);
 
 namespace WP2StaticCloudflareWorkers;
 
+use function add_action;
+use function current_user_can;
+use function deactivate_plugins;
+use function esc_html;
+use function esc_html__;
+use function plugin_basename;
+use function register_activation_hook;
+use function register_deactivation_hook;
+use function register_uninstall_hook;
+
 if (! defined('ABSPATH')) {
     die;
 }
