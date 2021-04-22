@@ -1,8 +1,13 @@
 <?php
 
-declare(strict_types=1);
-
 /**
+ * WP2Static Cloudflare Workers Add-on
+ *
+ * @package           WP2StaticCloudflareWorkers
+ * @author            Leon Stafford <me@ljs.dev>
+ * @license           The Unlicense https://unlicense.org
+ * @link              https://github.com/leonstafford/wp2static-addon-cloudflare-workers
+ *
  * Plugin Name:       WP2Static Add-on: Cloudflare Workers Deployment
  * Plugin URI:        https://wp2static.com
  * Description:       Cloudflare Workers deployment add-on for WP2Static.
@@ -14,10 +19,14 @@ declare(strict_types=1);
  * Text Domain:       wp2static-addon-cloudflare-workers
  */
 
-if (! defined('WPINC')) {
+declare(strict_types=1);
+
+if (! defined('ABSPATH')) {
     die;
 }
 
+// TODO: defines into a Config, like @szepeviktor does in:
+// szepeviktor/small-project/blob/346d4c3008a2fc67f47df19a5b54c9546a27f135/plugin-name.php#L75
 define('WP2STATIC_CLOUDFLARE_WORKERS_PATH', plugin_dir_path(__FILE__));
 define('WP2STATIC_CLOUDFLARE_WORKERS_VERSION', '1.0-dev');
 
@@ -27,7 +36,9 @@ if (
     require WP2STATIC_CLOUDFLARE_WORKERS_PATH . 'vendor/autoload.php';
 }
 
-function run_wp2static_addon_cloudflare_workers()
+// TODO: don't run global fn, rather, do req's check and load/fail:
+// szepeviktor/small-project/blob/346d4c3008a2fc67f47df19a5b54c9546a27f135/plugin-name.php#L92
+function runWp2staticAddonCloudflareWorkers()
 {
     $controller = new WP2StaticCloudflareWorkers\Controller();
     $controller->run();
@@ -43,4 +54,4 @@ register_deactivation_hook(
     [ 'WP2StaticCloudflareWorkers\Controller', 'deactivate' ]
 );
 
-run_wp2static_addon_cloudflare_workers();
+runWp2staticAddonCloudflareWorkers();
