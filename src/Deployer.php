@@ -74,13 +74,8 @@ class Deployer
             )
         );
 
-        foreach (array_keys($iterator) as $filename) {
-            $baseName = basename($filename);
-
-            if ($baseName === '.' || $baseName === '..') {
-                continue;
-            }
-
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+        foreach ($iterator as $filename => $unusedVar) {
             $realFilepath = realpath($filename);
 
             $key = str_replace($processedSitePath, '', $filename);
@@ -220,7 +215,8 @@ class Deployer
         $fileLimit = 10000;
         $pathsInBatch = [];
 
-        foreach (array_keys($iterator) as $filename) {
+        // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
+        foreach ($iterator as $filename => $unusedVar) {
             if ($filesInBatch === $fileLimit) {
                 $batchNumber += 1;
                 $filesInBatch = 0;
