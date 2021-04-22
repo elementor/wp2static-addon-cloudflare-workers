@@ -1,3 +1,25 @@
+<?php
+
+/**
+ * Cloudflare Workers View
+ *
+ * PHP Version 7.4
+ *
+ * @category WordPress_Plugin
+ * @package  WP2StaticCloudflareWorkers
+ * @author   Leon Stafford <me@ljs.dev>
+ * @license  The Unlicense
+ * @link     https://unlicense.org
+ */
+
+declare(strict_types=1);
+
+/**
+ * Specify type of received $view var
+ *
+ * @var array $view
+ */
+?>
 <h2>Cloudflare Workers Deployment Options</h2>
 
 <form
@@ -5,12 +27,13 @@
     method="POST"
     action="<?php
 
-    declare(strict_types=1);
-
     echo esc_url(admin_url('admin-post.php')); ?>">
 
     <?php wp_nonce_field($view['nonce_action']); ?>
-    <input name="action" type="hidden" value="wp2static_cloudflare_workers_save_options" />
+    <input
+        name="action"
+        type="hidden"
+        value="wp2static_cloudflare_workers_save_options" />
 
 <table class="widefat striped">
     <tbody>
