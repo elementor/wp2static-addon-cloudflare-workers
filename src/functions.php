@@ -48,7 +48,10 @@ function uninstall()
 function printRequirementsNotice()
 {
     // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
-    error_log('WP2Static Cloudflare Workers Add-on requirements are not met. Please read the Installation instructions.');
+    error_log(
+        'WP2Static Cloudflare Workers Add-on requirements are not met .' .
+        'Please read the Installation instructions.'
+    );
 
     if (! current_user_can('activate_plugins')) {
         return;
@@ -65,10 +68,11 @@ function printRequirementsNotice()
  */
 function registerCliCommands()
 {
-    \WP_CLI::add_command(
+    WP_CLI::add_command(
         'wp2static cloudflare_workers',
         [ 'WP2StaticCloudflareWorkers\CLI', 'cloudflareWorkers' ]
     );
+}
 
 /**
  * Start!

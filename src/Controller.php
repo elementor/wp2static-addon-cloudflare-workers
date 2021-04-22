@@ -19,7 +19,7 @@ namespace WP2StaticCloudflareWorkers;
  */
 class Controller
 {
-    public function __construct(): void
+    public function __construct()
     {
         add_filter(
             'wp2static_add_menu_items',
