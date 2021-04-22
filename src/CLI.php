@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * CLI.php
+ *
+ * @package           WP2StaticCloudflareWorkers
+ * @author            Leon Stafford <me@ljs.dev>
+ * @license           The Unlicense
+ * @link              https://unlicense.org
+ */
+
 declare(strict_types=1);
 
 namespace WP2StaticCloudflareWorkers;
@@ -20,62 +29,63 @@ class CLI
      * Cloudflare Workers add-on commands
      *
      * @param array<string> $args CLI args
-     * @param array<string> $assoc_args CLI args
+     * @param array<string> $assocArgs CLI args
      */
-    public function cloudflare_workers(
+    // phpcs:ignore NeutronStandard.Functions.LongFunction.LongFunction
+    public function cloudflareWorkers(
         array $args,
-        array $assoc_args
+        array $assocArgs
     ): void {
         $action = $args[0] ?? null;
         $arg = $args[1] ?? null;
 
-        if (empty($action)) {
+        if (! $action) {
             WP_CLI::error('Missing required argument: <options>');
         }
 
         if ($action === 'options') {
-            if (empty($arg)) {
+            if (! $arg) {
                 WP_CLI::error('Missing required argument: <get|set|list>');
             }
 
-            $option_name = $args[2] ?? null;
+            $optionName = $args[2] ?? null;
 
             if ($arg === 'get') {
-                if (empty($option_name)) {
+                if (! $optionName) {
                     WP_CLI::error('Missing required argument: <option-name>');
                     return;
                 }
 
                 // decrypt apiToken
-                $option_value = $option_name === 'apiToken' ? \WP2Static\CoreOptions::encrypt_decrypt(
+                $optionValue = $optionName === 'apiToken' ? \WP2Static\CoreOptions::encrypt_decrypt(
                     'decrypt',
-                    Controller::getValue($option_name)
-                ) : Controller::getValue($option_name);
+                    Controller::getValue($optionName)
+                ) : Controller::getValue($optionName);
 
-                WP_CLI::line($option_value);
+                WP_CLI::line($optionValue);
             }
 
             if ($arg === 'set') {
-                if (empty($option_name)) {
+                if (! $optionName) {
                     WP_CLI::error('Missing required argument: <option-name>');
                     return;
                 }
 
-                $option_value = $args[3] ?? null;
+                $optionValue = $args[3] ?? null;
 
-                if (empty($option_value)) {
-                    $option_value = '';
+                if (! $optionValue) {
+                    $optionValue = '';
                 }
 
                 // decrypt apiToken
-                if ($option_name === 'apiToken') {
-                    $option_value = \WP2Static\CoreOptions::encrypt_decrypt(
+                if ($optionName === 'apiToken') {
+                    $optionValue = \WP2Static\CoreOptions::encrypt_decrypt(
                         'encrypt',
-                        $option_value
+                        $optionValue
                     );
                 }
 
-                Controller::saveOption($option_name, $option_value);
+                Controller::saveOption($optionName, $optionValue);
             }
 
             if ($arg === 'list') {
@@ -99,9 +109,9 @@ class CLI
             if ($arg === 'list') {
                 $client = new CloudflareWorkers();
 
-                $key_names = $client->list_keys();
+                $keyNames = $client->list_keys();
 
-                foreach ($key_names as $name) {
+                foreach ($keyNames as $name) {
                     WP_CLI::line($name);
                 }
             }
@@ -109,13 +119,13 @@ class CLI
             if ($arg === 'count') {
                 $client = new CloudflareWorkers();
 
-                $key_names = $client->list_keys();
+                $keyNames = $client->list_keys();
 
-                WP_CLI::line((string)count($key_names));
+                WP_CLI::line((string)count($keyNames));
             }
 
             if ($arg === 'delete') {
-                if (! isset($assoc_args['force'])) {
+                if (! isset($assocArgs['force'])) {
                     $this->multilinePrint(
                         "no --force given. Please type 'yes' to confirm
                         deletion of all keys in namespace"

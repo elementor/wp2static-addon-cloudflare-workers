@@ -62,7 +62,7 @@ class Controller
 
         \WP_CLI::add_command(
             'wp2static cloudflare_workers',
-            [ 'WP2StaticCloudflareWorkers\CLI', 'cloudflare_workers' ]
+            [ 'WP2StaticCloudflareWorkers\CLI', 'cloudflareWorkers' ]
         );
     }
 
