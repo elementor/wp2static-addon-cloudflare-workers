@@ -12,7 +12,7 @@ You can choose one of the following options:
  - checkout this source code into plugins directory
  - compile an installable zip using the `composer build` command
  - use the [Packagist package](https://packagist.org/packages/leonstafford/wp2static-addon-cloudflare-workers) 
- - [purchase a ready to use installer file](https://wp2static.com/download))
+ - [purchase a ready to use installer file](https://wp2static.com/download)
 
 ## Documentation
 
