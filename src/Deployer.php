@@ -215,6 +215,7 @@ class Deployer
         $fileLimit = 10000;
         $pathsInBatch = [];
 
+        // TODO: Q: will iterator_to_array() allow rm'ing unused var?
         // phpcs:ignore SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable
         foreach ($iterator as $filename => $unusedVar) {
             if ($filesInBatch === $fileLimit) {
