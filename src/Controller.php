@@ -165,19 +165,20 @@ class Controller
         self::createOptionsTable();
         self::seedOptions();
 
-        $view = [];
-        $view['nonce_action'] = 'wp2static-cloudflare-workers-options';
-        $view['uploads_path'] = \WP2Static\SiteInfo::getPath('uploads');
-        $cloudflareWorkersPath =
-            \WP2Static\SiteInfo::getPath('uploads') . 'wp2static-processed-site';
+        $templateLoader = new FileSystemLoader(__DIR__ . '/../views/');
 
-        $view['options'] = self::getOptions();
+        $twig =  new Twig\Environment($this->loader);
+        echo $twig->render(
+            'admin-page.html.twig',
+            [
+                'nonce_action' => 'wp2static-cloudflare-workers-options',
+                'uploads_path' => \WP2Static\SiteInfo::getPath('uploads'),
+                'options' => self::getOptions(),
+                'cloudflare_workers_url' => is_file($cloudflareWorkersPath) ?
+                    \WP2Static\SiteInfo::getUrl('uploads') . 'wp2static-processed-site.cf' : '#',
+            ]
+        );
 
-        $view['cloudflare_workers_url'] =
-            is_file($cloudflareWorkersPath) ?
-                \WP2Static\SiteInfo::getUrl('uploads') . 'wp2static-processed-site.cf' : '#';
-
-        require_once __DIR__ . '/../views/cloudflare-workers-page.php';
     }
 
     public function deploy( string $processedSitePath ): void
