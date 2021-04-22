@@ -25,9 +25,9 @@ class CloudflareWorkers
     public string $namespaceID;
     public string $apiToken;
     public Client $client;
-    /** @var string[] $headers Client headers */
+    /** @var array<string> $headers Client headers */
     public array $headers;
-    /** @var string[] $keyNames List of key names */
+    /** @var array<string> $keyNames List of key names */
     public array $keyNames;
 
     public const MAX_KEYS_DELETE = 10000;

@@ -39,19 +39,19 @@ class CLI
         $action = $args[0] ?? null;
         $arg = $args[1] ?? null;
 
-        if (! $action) {
+        if ($action === null) {
             WP_CLI::error('Missing required argument: <options>');
         }
 
         if ($action === 'options') {
-            if (! $arg) {
+            if ($arg === null) {
                 WP_CLI::error('Missing required argument: <get|set|list>');
             }
 
             $optionName = $args[2] ?? null;
 
             if ($arg === 'get') {
-                if (! $optionName) {
+                if ($optionName === null) {
                     WP_CLI::error('Missing required argument: <option-name>');
                     return;
                 }
@@ -66,14 +66,14 @@ class CLI
             }
 
             if ($arg === 'set') {
-                if (! $optionName) {
+                if ($optionName === null) {
                     WP_CLI::error('Missing required argument: <option-name>');
                     return;
                 }
 
                 $optionValue = $args[3] ?? null;
 
-                if (! $optionValue) {
+                if ($optionValue === null) {
                     $optionValue = '';
                 }
 
@@ -109,7 +109,7 @@ class CLI
             if ($arg === 'list') {
                 $client = new CloudflareWorkers();
 
-                $keyNames = $client->list_keys();
+                $keyNames = $client->listKeys();
 
                 foreach ($keyNames as $name) {
                     WP_CLI::line($name);
@@ -119,7 +119,7 @@ class CLI
             if ($arg === 'count') {
                 $client = new CloudflareWorkers();
 
-                $keyNames = $client->list_keys();
+                $keyNames = $client->listKeys();
 
                 WP_CLI::line((string)count($keyNames));
             }
@@ -140,7 +140,7 @@ class CLI
 
                 $client = new CloudflareWorkers();
 
-                $success = $client->delete_keys();
+                $success = $client->deleteKeys();
 
                 if (! $success) {
                     WP_CLI::error('Failed to delete keys (maybe there weren\'t any?');
