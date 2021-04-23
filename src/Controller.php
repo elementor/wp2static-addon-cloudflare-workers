@@ -159,7 +159,7 @@ class Controller
         self::seedOptions();
 
         $latte = new Latte\Engine();
-        $latte->setTempDirectory(Config::get('filePath') . 'views');
+        $latte->setTempDirectory(sys_get_temp_dir());
 
         $cloudflareWorkersPath =
             \WP2Static\SiteInfo::getPath('uploads') . 'wp2static-processed-site';
@@ -177,7 +177,7 @@ class Controller
                     \WP2Static\SiteInfo::getUrl('uploads') . 'wp2static-processed-site.cf' : '#',
         ];
 
-        $latte->render('admin-page.latte', $parameters);
+        $latte->render(Config::get('pluginDir') . '/views/admin-page.latte', $parameters);
     }
 
     public function deploy( string $processedSitePath ): void

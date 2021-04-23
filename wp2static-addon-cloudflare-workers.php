@@ -78,6 +78,7 @@ Config::init(
     [
         'version' => '1.0.0-dev',
         'filePath' => __FILE__,
+        'pluginDir' => plugin_dir_path( __FILE__ ),
         'baseName' => plugin_basename(__FILE__),
         'slug' => 'wp2static-addon-cloudflare-workers',
     ]
