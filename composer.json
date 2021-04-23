@@ -29,11 +29,11 @@
         "leonstafford/wp2static": "^7.1"
     },
     "require-dev": {
-        "10up/wp_mock": "^0.4.2",
+        "10up/wp_mock": "*",
         "dealerdirect/phpcodesniffer-composer-installer": "*",
         "mikey179/vfsstream": "*",
         "mockery/mockery": "*",
-        "pestphp/pest": "^1.0.1",
+        "pestphp/pest": "*",
         "php-parallel-lint/php-parallel-lint": "*",
         "phpcompatibility/php-compatibility": "*",
         "phpunit/phpunit": "*",
@@ -41,7 +41,7 @@
         "squizlabs/php_codesniffer": "dev-master",
         "szepeviktor/phpstan-wordpress": "*",
         "szepeviktor/phpcs-psr-12-neutron-hybrid-ruleset": "*",
-        "php-stubs/wp-cli-stubs": "^2.4"
+        "php-stubs/wp-cli-stubs": "*"
     },
     "autoload": {
         "psr-4": {
