@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace WP2StaticCloudflareWorkers;
 
-use GuzzleHttp\Client;
+use WP2StaticGuzzleHttp\Client;
 
 /**
  * CloudflareWorkers Client Functions

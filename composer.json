@@ -2,14 +2,14 @@
     "name": "leonstafford/wp2static-addon-cloudflare-workers",
     "description": "Cloudflare Workers deployment Add-on for WP2Static.",
     "homepage": "https://wp2static.com",
-      "license": "UNLICENSE",
-      "authors": [
+    "license": "UNLICENSE",
+    "authors": [
         {
           "name": "Leon Stafford",
           "email": "me@ljs.dev",
           "homepage": "https://ljs.dev"
         }
-      ],
+    ],
     "type": "wordpress-plugin",
     "support": {
         "issues": "https://github.com/leonstafford/wp2static-addon-cloudflare-workers/issues",
@@ -17,9 +17,14 @@
         "docs": "https://wp2static.com/documentation",
         "source": "https://github.com/leonstafford/wp2static-addon-cloudflare-workers"
     },
+    "replace": {
+        "guzzlehttp/guzzle":"*",
+        "guzzlehttp/promises":"*",
+        "guzzlehttp/psr7":"*"
+    },
     "require": {
         "php": "^7.4 || ^8.0",
-        "guzzlehttp/guzzle": "^7.3",
+        "leonstafford/wp2staticguzzle": "^7.2.0",
         "latte/latte": "^2.10",
         "leonstafford/wp2static": "^7.1"
     },

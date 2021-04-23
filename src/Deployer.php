@@ -15,7 +15,7 @@ namespace WP2StaticCloudflareWorkers;
 
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
-use GuzzleHttp\Client;
+use WP2StaticGuzzleHttp\Client;
 use WP2Static\CoreOptions;
 
 /**
@@ -297,7 +297,7 @@ class Deployer
                         'json' => $bulkKeyValues,
                     ],
                 );
-            } catch (\GuzzleHttp\Exception\RequestException $e) {
+            } catch (\WP2StaticGuzzleHttp\Exception\RequestException $e) {
                 if ($e->hasResponse()) {
                     $response = $e->getResponse();
 
