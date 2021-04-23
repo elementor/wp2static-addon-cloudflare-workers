@@ -200,7 +200,7 @@ class Controller
 
         $tableName = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
 
-        $charsetCollate = $wpdb->get_charsetCollate();
+        $charsetCollate = $wpdb->get_charset_collate();
 
         $sql = "CREATE TABLE $tableName (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
