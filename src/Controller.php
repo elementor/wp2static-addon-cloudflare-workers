@@ -69,9 +69,7 @@ class Controller
         global $wpdb;
         $options = [];
 
-        $tableName = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
-
-        $rows = $wpdb->get_results($wpdb->prepare('SELECT * FROM %s', $tableName));
+        $rows = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}wp2static_addon_cloudflare_workers_options");
 
         foreach ($rows as $row) {
             $options[$row->name] = $row;
@@ -88,12 +86,10 @@ class Controller
     {
         global $wpdb;
 
-        $tableName = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
-
         $wpdb->query(
             $wpdb->prepare(
-                'INSERT IGNORE INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
-                $tableName,
+                "INSERT IGNORE INTO {$wpdb->prefix}wp2static_addon_cloudflare_workers_options " .
+                    '(name, value, label, description) VALUES (%s, %s, %s, %s);',
                 'apiToken',
                 '',
                 'API Token',
@@ -103,8 +99,8 @@ class Controller
 
         $wpdb->query(
             $wpdb->prepare(
-                'INSERT IGNORE INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
-                $tableName,
+                "INSERT IGNORE INTO {$wpdb->prefix}wp2static_addon_cloudflare_workers_options " .
+                    '(name, value, label, description) VALUES (%s, %s, %s, %s);',
                 'useBulkUpload',
                 '1',
                 'Bulk uploads',
@@ -114,8 +110,8 @@ class Controller
 
         $wpdb->query(
             $wpdb->prepare(
-                'INSERT IGNORE INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
-                $tableName,
+                "INSERT IGNORE INTO {$wpdb->prefix}wp2static_addon_cloudflare_workers_options " .
+                    '(name, value, label, description) VALUES (%s, %s, %s, %s);',
                 'namespaceID',
                 '',
                 'Namespace ID',
@@ -125,8 +121,8 @@ class Controller
 
         $wpdb->query(
             $wpdb->prepare(
-                'INSERT IGNORE INTO %s (name, value, label, description) VALUES (%s, %s, %s, %s);',
-                $tableName,
+                "INSERT IGNORE INTO {$wpdb->prefix}wp2static_addon_cloudflare_workers_options " .
+                    '(name, value, label, description) VALUES (%s, %s, %s, %s);',
                 'accountID',
                 '',
                 'Account ID',
@@ -144,10 +140,8 @@ class Controller
     {
         global $wpdb;
 
-        $tableName = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
-
         $wpdb->update(
-            $tableName,
+            $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options',
             [ 'value' => $value ],
             [ 'name' => $name ]
         );
@@ -198,11 +192,9 @@ class Controller
     {
         global $wpdb;
 
-        $tableName = $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options';
-
         $charsetCollate = $wpdb->get_charset_collate();
 
-        $sql = "CREATE TABLE $tableName (
+        $sql = "CREATE TABLE {$wpdb->prefix}wp2static_addon_cloudflare_workers_options (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             name VARCHAR(191) NOT NULL,
             value VARCHAR(255) NOT NULL,
@@ -216,7 +208,7 @@ class Controller
 
         // dbDelta doesn't handle unique indexes well.
         $indexes = $wpdb->query(
-            $wpdb->prepare('SHOW INDEX FROM %s WHERE key_name = "name"', $tableName)
+            "SHOW INDEX FROM {$wpdb->prefix}wp2static_addon_cloudflare_workers_options WHERE key_name = 'name'"
         );
 
         if ($indexes !== 0) {
@@ -224,14 +216,16 @@ class Controller
         }
 
         $result = $wpdb->query(
-            $wpdb->prepare('CREATE UNIQUE INDEX name ON %s (name)', $tableName)
+            "CREATE UNIQUE INDEX name ON {$wpdb->prefix}wp2static_addon_cloudflare_workers_options (name)"
         );
 
         if ($result !== false) {
             return;
         }
 
-        \WP2Static\WsLog::l("Failed to create 'name' index on $tableName.");
+        \WP2Static\WsLog::l(
+            "Failed to create 'name' index on {$wpdb->prefix}wp2static_addon_cloudflare_workers_options."
+        );
     }
 
     public static function deactivateForSingleSite(): void
@@ -354,8 +348,7 @@ class Controller
 
         $optionValue = $wpdb->get_var(
             $wpdb->prepare(
-                'SELECT value FROM %s WHERE name = %s LIMIT 1',
-                $wpdb->prefix . 'wp2static_addon_cloudflare_workers_options',
+                "SELECT value FROM {$wpdb->prefix}wp2static_addon_cloudflare_workers_options WHERE name = %s LIMIT 1",
                 $name
             )
         );
