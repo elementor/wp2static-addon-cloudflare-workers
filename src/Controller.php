@@ -215,12 +215,18 @@ class Controller
         dbDelta($sql);
 
         // dbDelta doesn't handle unique indexes well.
-        $indexes = $wpdb->query($wpdb->prepare('SHOW INDEX FROM %s WHERE key_name = \'name\'', $tableName));
+        $indexes = $wpdb->query(
+            $wpdb->prepare('SHOW INDEX FROM %s WHERE key_name = "name"', $tableName)
+        );
+
         if ($indexes !== 0) {
             return;
         }
 
-        $result = $wpdb->query($wpdb->prepare('CREATE UNIQUE INDEX name ON %s (name)', $tableName));
+        $result = $wpdb->query(
+            $wpdb->prepare('CREATE UNIQUE INDEX name ON %s (name)', $tableName)
+        );
+
         if ($result !== false) {
             return;
         }
