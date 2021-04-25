@@ -164,6 +164,7 @@ class Controller
                 'nonce_action' => wp_create_nonce('wp2static-cloudflare-workers-options'),
                 'uploads_path' => \WP2Static\SiteInfo::getPath('uploads'),
                 'admin_post_path' => esc_url(admin_url('admin-post.php')),
+                'wp_referrer_path' => esc_url(admin_url('admin.php?page=wp2static-addon-cloudflare-workers')),
                 'options' => $options,
                 'decrypted_api_token' => $options['apiToken']->value ?
                     \WP2Static\CoreOptions::encrypt_decrypt('decrypt', $options['apiToken']->value) : '',

@@ -7,9 +7,14 @@
 
     <input
       type="hidden"
-      id="wp2static-cloudflare-workers-options"
-      name="wp2static-cloudflare-workers-options"
+      id="_wpnonce"
+      name="_wpnonce"
       value="{$nonce_action}" />
+
+    <input
+      type="hidden"
+      name="_wp_http_referer"
+      value="{$wp_referrer_path}" /> 
 
     <input
         name="action"
