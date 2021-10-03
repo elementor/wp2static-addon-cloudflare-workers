@@ -69,8 +69,7 @@
            "@lint",
            "@phpcs",
            "@phpstan",
-           "@pest",
-           "@coverage"
+           "@pest"
         ],
         "build": "/bin/sh tools/build_release.sh"
     }
