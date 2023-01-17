@@ -30,6 +30,7 @@ cp -r $EXEC_DIR/wp2static-addon-cloudflare-workers.php $TMP_DIR/wp2static-addon-
 cp -r $EXEC_DIR/src $TMP_DIR/wp2static-addon-cloudflare-workers/
 cp -r $EXEC_DIR/vendor $TMP_DIR/wp2static-addon-cloudflare-workers/
 cp -r $EXEC_DIR/views $TMP_DIR/wp2static-addon-cloudflare-workers/
+cp -r $EXEC_DIR/js $TMP_DIR/wp2static-addon-cloudflare-workers/
 
 cd $TMP_DIR
 
