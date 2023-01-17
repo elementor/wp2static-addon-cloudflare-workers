@@ -49,6 +49,12 @@ class Controller
             1
         );
 
+        add_action(
+            'admin_enqueue_scripts',
+            [ $this, 'wp2staticAdminScripts' ],
+            0
+        );
+
         do_action(
             'wp2static_register_addon',
             'wp2static-addon-cloudflare-workers',
@@ -127,6 +133,17 @@ class Controller
                 '',
                 'Account ID',
                 'ie 13e736c51a7a73dabc0b83f75d3bedce'
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT IGNORE INTO {$wpdb->prefix}wp2static_addon_cloudflare_workers_options " .
+                    '(name, value, label, description) VALUES (%s, %s, %s, %s);',
+                'batchSize',
+                Deployer::BATCH_SIZE_DEFAULT,
+                'Batch Size',
+                'Number of files to include in each batch'
             )
         );
     }
@@ -334,6 +351,17 @@ class Controller
             [ 'name' => 'accountID' ]
         );
 
+        $batchSize = sanitize_text_field($_POST['batchSize']);
+        if (!$batchSize) {
+            $batchSize = (string)Deployer::BATCH_SIZE_DEFAULT;
+        }
+        $batchSize = preg_replace('/\D/', '', $batchSize);
+        $wpdb->update(
+            $tableName,
+            [ 'value' => $batchSize ],
+            [ 'name' => 'batchSize' ]
+        );
+
         wp_safe_redirect(admin_url('admin.php?page=wp2static-addon-cloudflare-workers'));
         exit;
     }
@@ -371,5 +399,17 @@ class Controller
             'wp2static-addon-cloudflare-workers',
             [ $this, 'renderCloudflareWorkersPage' ]
         );
+    }
+
+    public static function wp2staticAdminScripts(): void
+    {
+        wp_register_script(
+            'wp2static_addon_cloudflare_admin_scripts',
+            plugins_url('../js/admin/batch-size-controller.js', __FILE__),
+            [],
+            Config::get('version'),
+            false
+        );
+        wp_enqueue_script('wp2static_addon_cloudflare_admin_scripts');
     }
 }
