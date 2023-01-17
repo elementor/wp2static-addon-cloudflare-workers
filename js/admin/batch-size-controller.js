@@ -22,6 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 batchSize = maxBatchSize;
             }
             batchSizeField.value = batchSize;
-        })
+        });
     }
 });
