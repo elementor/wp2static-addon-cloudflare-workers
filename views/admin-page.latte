@@ -89,6 +89,24 @@
             </td>
         </tr>
 
+        <tr id="batchSize__wrapper" class="{=(int) $options[useBulkUpload]->value === 0 ? hidden : ''}">
+            <td style="width:50%;">
+                <label for="{$options[batchSize]->name}">
+                  {$options[batchSize]->label}
+                </label>
+            </td>
+            <td>
+                <input
+                    id="{$options[batchSize]->name}"
+                    name="{$options[batchSize]->name}"
+                    type="number"
+                    min="1"
+                    max="10000"
+                    value="{$options[batchSize]->value}"
+                />
+            </td>
+        </tr>
+
     </tbody>
 </table>
 

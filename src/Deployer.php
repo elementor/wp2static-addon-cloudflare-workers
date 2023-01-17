@@ -23,7 +23,7 @@ use WP2Static\CoreOptions;
  */
 class Deployer
 {
-
+    public const BATCH_SIZE_DEFAULT = 10000;
     public function uploadFiles( string $processedSitePath ): void
     {
         if (Controller::getValue('useBulkUpload') === '1') {
@@ -211,9 +211,10 @@ class Deployer
         $batches = [];
 
         $filesInBatch = 0;
-        // TODO: add select menu for user-overriding batch size or be clever and auto-retry
-        // with smaller batch sizes on errors
-        $fileLimit = 10000;
+        $fileLimit = Controller::getValue("batchSize");
+        if( !$fileLimit || empty($fileLimit) ) {
+            $fileLimit = self::BATCH_SIZE_DEFAULT;
+        }
         $pathsInBatch = [];
 
         // TODO: Q: will iterator_to_array() allow rm'ing unused var?
