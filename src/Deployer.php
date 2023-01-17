@@ -211,8 +211,8 @@ class Deployer
         $batches = [];
 
         $filesInBatch = 0;
-        $fileLimit = Controller::getValue("batchSize");
-        if( !$fileLimit || empty($fileLimit) ) {
+        $fileLimit = Controller::getValue('batchSize');
+        if (!$fileLimit) {
             $fileLimit = self::BATCH_SIZE_DEFAULT;
         }
         $pathsInBatch = [];

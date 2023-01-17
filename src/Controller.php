@@ -135,7 +135,7 @@ class Controller
                 'ie 13e736c51a7a73dabc0b83f75d3bedce'
             )
         );
-        
+
         $wpdb->query(
             $wpdb->prepare(
                 "INSERT IGNORE INTO {$wpdb->prefix}wp2static_addon_cloudflare_workers_options " .
@@ -352,10 +352,10 @@ class Controller
         );
 
         $batchSize = sanitize_text_field($_POST['batchSize']);
-        if( !isset($batchSize) || empty($batchSize) ) {
-            $batchSize = (string) Deployer::BATCH_SIZE_DEFAULT;
+        if (!$batchSize) {
+            $batchSize = (string)Deployer::BATCH_SIZE_DEFAULT;
         }
-        $batchSize = preg_replace('/\D/', "", $batchSize);
+        $batchSize = preg_replace('/\D/', '', $batchSize);
         $wpdb->update(
             $tableName,
             [ 'value' => $batchSize ],
@@ -401,14 +401,15 @@ class Controller
         );
     }
 
-    public static function wp2staticAdminScripts() : void {
+    public static function wp2staticAdminScripts(): void
+    {
         wp_register_script(
             'wp2static_addon_cloudflare_admin_scripts',
-            plugins_url( '../js/admin/batch-size-controller.js', __FILE__ ),
+            plugins_url('../js/admin/batch-size-controller.js', __FILE__),
             [],
             Config::get('version'),
             false
         );
-        wp_enqueue_script( 'wp2static_addon_cloudflare_admin_scripts' );
+        wp_enqueue_script('wp2static_addon_cloudflare_admin_scripts');
     }
 }
